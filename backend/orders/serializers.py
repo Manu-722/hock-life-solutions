@@ -24,10 +24,10 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            "id", "customer", "customer_username", "status", "till_number_used",
+            "id", "customer", "customer_username", "status", "paybill_number_used", "account_number_used",
             "total_amount", "admin_notes", "items", "created_at", "approved_at",
         ]
-        read_only_fields = ["customer", "status", "total_amount", "till_number_used", "approved_at"]
+        read_only_fields = ["customer", "status", "total_amount", "paybill_number_used", "account_number_used", "approved_at"]
 
 
 class CreateOrderSerializer(serializers.Serializer):
@@ -44,7 +44,8 @@ class CreateOrderSerializer(serializers.Serializer):
         order = Order.objects.create(
             customer=request.user,
             total_amount=0,
-            till_number_used=settings.COMPANY_TILL_NUMBER,
+            paybill_number_used=settings.COMPANY_PAYBILL_NUMBER,
+            account_number_used=settings.COMPANY_ACCOUNT_NUMBER,
         )
         for item in items_data:
             product = Product.objects.get(id=item["product_id"])

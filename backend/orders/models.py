@@ -12,7 +12,8 @@ class Order(models.Model):
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    till_number_used = models.CharField(max_length=20, blank=True, help_text="Company till/paybill number shown at checkout time")
+    paybill_number_used = models.CharField(max_length=20, blank=True, help_text="Company Paybill number shown at checkout time")
+    account_number_used = models.CharField(max_length=30, blank=True, help_text="Company account number shown at checkout time")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     admin_notes = models.CharField(max_length=255, blank=True)
 

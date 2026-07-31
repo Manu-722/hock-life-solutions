@@ -1,5 +1,5 @@
 """
-Django settings for Hock Life Solutions e-commerce backend.
+Django settings for Hawk Life Solutions e-commerce backend.
 """
 import os
 from datetime import timedelta
@@ -13,8 +13,10 @@ load_dotenv(BASE_DIR / ".env")
 # ---------------------------------------------------------------------------
 # CORE / SECURITY
 # ---------------------------------------------------------------------------
-# In production, set this via an environment variable and NEVER commit it.
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-CHANGE-ME-before-deploying")
+# In production, ALWAYS set this via an environment variable in your .env
+# file and never commit a real value. The fallback below is only for local
+# development and is intentionally not secret.
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-dev-key-do-not-use-in-production")
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
@@ -149,6 +151,14 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
+# This project uses JWT (via simplejwt) for authentication, not DRF's older
+# authtoken system - so dj-rest-auth shouldn't try to create/manage tokens
+# through rest_framework.authtoken. This silences its "TOKEN_MODEL" warning.
+REST_AUTH = {
+    "USE_JWT": True,
+    "TOKEN_MODEL": None,
+}
+
 # ---------------------------------------------------------------------------
 # CORS - allow the React frontend to talk to this API
 # ---------------------------------------------------------------------------
@@ -170,7 +180,7 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hock Life Solutions <no-reply@hocklife.com>")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <no-reply@hawklife.com>")
 
 PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 
@@ -196,6 +206,12 @@ SOCIALACCOUNT_PROVIDERS = {
 # ---------------------------------------------------------------------------
 # HOCK LIFE SOLUTIONS - BUSINESS SETTINGS
 # ---------------------------------------------------------------------------
-COMPANY_NAME = "Hock Life Solutions"
-# The "pivot number" (M-Pesa Till/Paybill number) shown to customers at checkout.
-COMPANY_TILL_NUMBER = os.environ.get("COMPANY_TILL_NUMBER", "000000")
+COMPANY_NAME = "Hawk Life Solutions"
+# Real M-Pesa Paybill payment details shown to customers at checkout.
+COMPANY_PAYBILL_NUMBER = os.environ.get("COMPANY_PAYBILL_NUMBER", "522522")
+COMPANY_ACCOUNT_NUMBER = os.environ.get("COMPANY_ACCOUNT_NUMBER", "7518213")
+
+# One-time password used by `python manage.py create_admin` to create the
+# first admin account. The admin is forced to change it on first login.
+# Set this in your .env file - never hardcode a real value here.
+ADMIN_STARTER_PASSWORD = os.environ.get("ADMIN_STARTER_PASSWORD", "")

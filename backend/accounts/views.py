@@ -81,7 +81,7 @@ class ForgotPasswordView(APIView):
         PasswordResetCode.objects.create(user=user, code=code)
 
         send_mail(
-            subject="Your Hock Life Solutions password reset code",
+            subject="Your Hawk Life Solutions password reset code",
             message=(
                 f"Hi {user.first_name or user.username},\n\n"
                 f"Your password reset code is: {code}\n"

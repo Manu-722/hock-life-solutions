@@ -34,12 +34,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 **OrderSerializer(order).data,
-                "till_number": settings.COMPANY_TILL_NUMBER,
+                "paybill_number": settings.COMPANY_PAYBILL_NUMBER,
+                "account_number": settings.COMPANY_ACCOUNT_NUMBER,
                 "company_name": settings.COMPANY_NAME,
                 "message": (
-                    f"Please pay via Till/Paybill {settings.COMPANY_TILL_NUMBER} "
-                    f"({settings.COMPANY_NAME}). Your order will show as Approved "
-                    "once the admin confirms payment."
+                    f"Please pay via M-Pesa Paybill {settings.COMPANY_PAYBILL_NUMBER}, "
+                    f"Account Number {settings.COMPANY_ACCOUNT_NUMBER} ({settings.COMPANY_NAME}). "
+                    "Your order will show as Approved once the admin confirms payment."
                 ),
             },
             status=status.HTTP_201_CREATED,
