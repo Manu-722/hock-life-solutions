@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { RequireAdmin, RequireAuth } from "./components/Guards";
 
 import Home from "./pages/Home";
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/admin/*" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
         </Routes>
       </main>
+      <Footer />
     </>
   );
 }

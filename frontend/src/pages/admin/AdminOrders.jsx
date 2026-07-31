@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import client from "../../api/client";
 
 const statusClass = { PENDING: "status-pending", APPROVED: "status-approved", REJECTED: "status-rejected" };
@@ -16,7 +17,7 @@ export default function AdminOrders() {
     <div>
       <h3>Customer orders</h3>
       <p style={{ color: "var(--hl-gray)" }}>
-        Approve an order once you've confirmed the customer paid via the Hock Life Solutions till/paybill number.
+        Approve an order once you've confirmed the customer paid via the Hawk Life Solutions till/paybill number.
         The customer sees the status update immediately in their Profile order history.
       </p>
       <table>
@@ -35,8 +36,8 @@ export default function AdminOrders() {
               <td style={{ display: "flex", gap: 8 }}>
                 {o.status === "PENDING" && (
                   <>
-                    <button className="btn" onClick={() => approve(o.id)}>Approve</button>
-                    <button className="btn danger" onClick={() => reject(o.id)}>Reject</button>
+                    <button className="btn" onClick={() => approve(o.id)}><CheckCircle2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Approve</button>
+                    <button className="btn danger" onClick={() => reject(o.id)}><XCircle size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Reject</button>
                   </>
                 )}
               </td>

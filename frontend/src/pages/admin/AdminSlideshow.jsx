@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import client from "../../api/client";
 
 const emptyForm = { id: null, title: "", subtitle: "", link_url: "", order: 0, active: true };
@@ -88,8 +89,8 @@ export default function AdminSlideshow() {
               <td>{s.order}</td>
               <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
               <td style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={() => editSlide(s)}>Edit</button>
-                <button className="btn danger" onClick={() => removeSlide(s.id)}>Delete</button>
+                <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
+                <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
               </td>
             </tr>
           ))}

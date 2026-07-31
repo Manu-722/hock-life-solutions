@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,9 +10,10 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div>
-        <h2>Your cart</h2>
-        <p>Your cart is empty. <Link to="/">Continue shopping</Link>.</p>
+      <div className="empty-state">
+        <ShoppingBag size={44} />
+        <p>Your cart is empty.</p>
+        <Link to="/" className="btn">Continue shopping</Link>
       </div>
     );
   }
@@ -43,7 +45,7 @@ export default function Cart() {
                 />
               </td>
               <td>KES {(item.price * item.quantity).toLocaleString()}</td>
-              <td><button className="btn danger" onClick={() => removeItem(item.id)}>Remove</button></td>
+              <td><button className="btn danger" onClick={() => removeItem(item.id)}><Trash2 size={15} /></button></td>
             </tr>
           ))}
         </tbody>

@@ -1,13 +1,22 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = () => {
+    addItem(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1200);
+  };
 
   return (
     <div className="card product-card">
       <Link to={`/product/${product.id}`}>
-        <img src={product.image || "https://placehold.co/400x300?text=Hock+Life"} alt={product.name} />
+        <img src={product.image || "https://placehold.co/400x300?text=Hawk+Life"} alt={product.name} />
       </Link>
       <div style={{ marginTop: 10 }}>
         {product.is_on_offer && <span className="badge offer">OFFER</span>}{" "}
@@ -21,8 +30,12 @@ export default function ProductCard({ product }) {
         )}
         <span className="price">KES {Number(product.display_price).toLocaleString()}</span>
       </p>
-      <button className="btn" disabled={!product.in_stock} onClick={() => addItem(product)}>
-        {product.in_stock ? "Add to cart" : "Unavailable"}
+      <button className="btn" disabled={!product.in_stock} onClick={handleAdd}>
+        {added ? (
+          <><Check size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} /> Added!</>
+        ) : product.in_stock ? (
+          <><ShoppingCart size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} /> Add to cart</>
+        ) : "Unavailable"}
       </button>
     </div>
   );

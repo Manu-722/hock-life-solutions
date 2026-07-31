@@ -18,7 +18,7 @@ export default function ProductDetail() {
   return (
     <div className="card" style={{ maxWidth: 800, margin: "24px auto", display: "flex", gap: 24, flexWrap: "wrap" }}>
       <img
-        src={product.image || "https://placehold.co/500x400?text=Hock+Life"}
+        src={product.image || "https://placehold.co/500x400?text=Hawk+Life"}
         alt={product.name}
         style={{ width: 320, height: 260, objectFit: "cover", borderRadius: 8 }}
       />

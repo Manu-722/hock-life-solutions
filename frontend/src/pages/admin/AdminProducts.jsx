@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import client from "../../api/client";
 
 const emptyForm = {
@@ -232,8 +233,8 @@ export default function AdminProducts() {
                 </button>
               </td>
               <td style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={() => editProduct(p)}>Edit</button>
-                <button className="btn danger" onClick={() => deleteProduct(p.id)}>Delete</button>
+                <button className="btn" onClick={() => editProduct(p)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
+                <button className="btn danger" onClick={() => deleteProduct(p.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
               </td>
             </tr>
           ))}

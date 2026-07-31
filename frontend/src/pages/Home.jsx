@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Search, SlidersHorizontal, PackageSearch } from "lucide-react";
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
@@ -20,11 +21,12 @@ export default function Home() {
     client.get("/products/categories/").then((res) => setCategories(res.data));
   }, []);
 
-  const runSearch = async () => {
+  const runSearch = async (overrides = {}) => {
     setLoading(true);
     const params = {};
+    const cat = overrides.category !== undefined ? overrides.category : category;
     if (search) params.search = search;
-    if (category) params.category = category;
+    if (cat) params.category = cat;
     if (minPrice) params.min_price = minPrice;
     if (maxPrice) params.max_price = maxPrice;
     if (onOfferOnly) params.is_on_offer = true;
@@ -38,13 +40,38 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const selectCategory = (slug) => {
+    const next = category === slug ? "" : slug;
+    setCategory(next);
+    runSearch({ category: next });
+  };
+
   return (
     <div>
+      <div className="hero">
+        <h1>Power your home with Hawk Life Solutions</h1>
+        <p>Reliable cells, induction cookers, and kitchenware — trusted quality, honest prices.</p>
+      </div>
+
       <Slideshow slides={slides} />
+
+      {categories.length > 0 && (
+        <div className="category-chips">
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              className={`chip ${category === c.slug ? "active" : ""}`}
+              onClick={() => selectCategory(c.slug)}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="searchbar card">
         <div className="field">
-          <label>Search</label>
+          <label><Search size={14} style={{ verticalAlign: "-2px" }} /> Search</label>
           <input placeholder="Search cells, cookers, sufurias..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="field">
@@ -68,13 +95,19 @@ export default function Home() {
           <input type="checkbox" style={{ width: "auto" }} checked={onOfferOnly} onChange={(e) => setOnOfferOnly(e.target.checked)} />
           <label style={{ margin: 0 }}>On offer only</label>
         </div>
-        <button className="btn" onClick={runSearch}>Filter</button>
+        <button className="btn" onClick={() => runSearch()}>
+          <SlidersHorizontal size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} />
+          Filter
+        </button>
       </div>
 
       {loading ? (
-        <p>Loading products...</p>
+        <p style={{ color: "var(--hl-gray)" }}>Loading products...</p>
       ) : products.length === 0 ? (
-        <p>No products match your search.</p>
+        <div className="empty-state">
+          <PackageSearch size={40} />
+          <p>No products match your search.</p>
+        </div>
       ) : (
         <div className="grid">
           {products.map((p) => <ProductCard key={p.id} product={p} />)}
