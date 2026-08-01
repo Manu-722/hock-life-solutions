@@ -1,19 +1,30 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     client.get(`/products/${id}/`).then((res) => setProduct(res.data));
   }, [id]);
 
   if (!product) return <p>Loading...</p>;
+
+  const handleAdd = () => {
+    if (!user) {
+      navigate("/login", { state: { from: "add_to_cart" } });
+      return;
+    }
+    addItem(product, qty);
+  };
 
   return (
     <div className="card" style={{ maxWidth: 800, margin: "24px auto", display: "flex", gap: 24, flexWrap: "wrap" }}>
@@ -56,8 +67,8 @@ export default function ProductDetail() {
 
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value))} style={{ width: 80 }} />
-          <button className="btn" disabled={!product.in_stock} onClick={() => addItem(product, qty)}>
-            {product.in_stock ? "Add to cart" : "Out of stock"}
+          <button className="btn" disabled={!product.in_stock} onClick={handleAdd}>
+            {product.in_stock ? (user ? "Add to cart" : "Login to buy") : "Out of stock"}
           </button>
         </div>
       </div>

@@ -20,7 +20,6 @@ export default function Navbar() {
         Hawk Life Solutions
       </Link>
       <nav>
-        <Link to="/">Shop</Link>
         <Link to="/cart" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <ShoppingCart size={17} /> Cart {count > 0 && <span className="admin-pill">{count}</span>}
         </Link>

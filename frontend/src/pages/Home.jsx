@@ -49,11 +49,15 @@ export default function Home() {
   return (
     <div>
       <div className="hero">
-        <h1>Power your home with Hawk Life Solutions</h1>
+        <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
         <p>Reliable cells, induction cookers, and kitchenware — trusted quality, honest prices.</p>
       </div>
 
-      <Slideshow slides={slides} />
+      {slides.length > 0 ? (
+        <Slideshow slides={slides} />
+      ) : (
+        <div className="slideshow-empty">No current offers — check back soon!</div>
+      )}
 
       {categories.length > 0 && (
         <div className="category-chips">

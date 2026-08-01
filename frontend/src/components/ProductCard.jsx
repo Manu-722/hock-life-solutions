@@ -1,13 +1,22 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [added, setAdded] = useState(false);
 
   const handleAdd = () => {
+    // Anyone can browse and view products, but adding to cart requires an
+    // account - send an anonymous visitor straight to the login page.
+    if (!user) {
+      navigate("/login", { state: { from: "add_to_cart" } });
+      return;
+    }
     addItem(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
@@ -34,7 +43,7 @@ export default function ProductCard({ product }) {
         {added ? (
           <><Check size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} /> Added!</>
         ) : product.in_stock ? (
-          <><ShoppingCart size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} /> Add to cart</>
+          <><ShoppingCart size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} /> {user ? "Add to cart" : "Login to buy"}</>
         ) : "Unavailable"}
       </button>
     </div>
