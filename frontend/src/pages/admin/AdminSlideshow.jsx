@@ -9,8 +9,21 @@ export default function AdminSlideshow() {
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
   const [message, setMessage] = useState("");
+  const [loadError, setLoadError] = useState("");
 
-  const load = () => client.get("/offers/slideshow/").then((r) => setSlides(r.data));
+  const load = () => {
+    setLoadError("");
+    client
+      .get("/offers/slideshow/")
+      .then((r) => setSlides(Array.isArray(r.data) ? r.data : r.data.results || []))
+      .catch((err) => {
+        setLoadError(
+          err.response?.status === 401 || err.response?.status === 403
+            ? "You need to be logged in as an admin to view slides."
+            : "Couldn't load slides. Is the backend server running?"
+        );
+      });
+  };
   useEffect(load, []);
 
   const update = (key) => (e) => {
@@ -43,20 +56,37 @@ export default function AdminSlideshow() {
       resetForm();
       load();
     } catch (err) {
-      setMessage("Error saving slide: " + JSON.stringify(err.response?.data || {}));
+      setMessage("Error saving slide: " + JSON.stringify(err.response?.data || { detail: "Unknown error" }));
     }
   };
 
   const removeSlide = async (id) => {
     if (!window.confirm("Remove this slide from the offers slideshow?")) return;
-    await client.delete(`/offers/slideshow/${id}/`);
-    load();
+    try {
+      await client.delete(`/offers/slideshow/${id}/`);
+      load();
+    } catch {
+      setMessage("Could not delete that slide.");
+    }
   };
 
   const toggleActive = async (s) => {
-    await client.patch(`/offers/slideshow/${s.id}/`, { active: !s.active });
-    load();
+    try {
+      await client.patch(`/offers/slideshow/${s.id}/`, { active: !s.active });
+      load();
+    } catch {
+      setMessage("Could not update that slide.");
+    }
   };
+
+  if (loadError) {
+    return (
+      <div className="empty-state">
+        <p style={{ fontWeight: 700 }}>{loadError}</p>
+        <button className="btn" onClick={load}>Try again</button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -80,22 +110,26 @@ export default function AdminSlideshow() {
       </div>
 
       <h3 className="section-title">All slides</h3>
-      <table>
-        <thead><tr><th>Title</th><th>Order</th><th>Status</th><th></th></tr></thead>
-        <tbody>
-          {slides.map((s) => (
-            <tr key={s.id}>
-              <td>{s.title}</td>
-              <td>{s.order}</td>
-              <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
-              <td style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
-                <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {slides.length === 0 ? (
+        <p style={{ color: "var(--hl-gray)" }}>No slides yet - add one above.</p>
+      ) : (
+        <table>
+          <thead><tr><th>Title</th><th>Order</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {slides.map((s) => (
+              <tr key={s.id}>
+                <td>{s.title}</td>
+                <td>{s.order}</td>
+                <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
+                <td style={{ display: "flex", gap: 8 }}>
+                  <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
+                  <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

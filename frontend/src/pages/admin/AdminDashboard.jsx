@@ -52,6 +52,11 @@ export default function AdminDashboard() {
         pendingCount: orders.filter((o) => o.status === "PENDING").length,
         activeSlides: slides.filter((s) => s.active).length,
       });
+    }).catch(() => {
+      // Stats are a nice-to-have on this page - if they fail to load, the
+      // dashboard should still render with "-" placeholders rather than
+      // crash the whole page (the individual Products/Slideshow/Orders
+      // tabs each have their own error handling for the real data).
     });
   }, []);
 

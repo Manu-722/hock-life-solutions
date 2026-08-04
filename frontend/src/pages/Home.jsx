@@ -1,8 +1,18 @@
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal, PackageSearch } from "lucide-react";
+import { Search, SlidersHorizontal, PackageSearch, Flame, UtensilsCrossed, Soup, LayoutGrid } from "lucide-react";
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
+
+// Picks an icon for a category based on its slug. Falls back to a generic
+// grid icon for any category that doesn't match a known keyword, so new
+// categories the admin adds later still get something sensible.
+function iconForCategory(slug) {
+  if (slug.includes("induction")) return Flame;
+  if (slug.includes("pan")) return UtensilsCrossed;
+  if (slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
+  return LayoutGrid;
+}
 
 export default function Home() {
   const [slides, setSlides] = useState([]);
@@ -12,8 +22,6 @@ export default function Home() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
   const [onOfferOnly, setOnOfferOnly] = useState(false);
 
   useEffect(() => {
@@ -27,8 +35,6 @@ export default function Home() {
     const cat = overrides.category !== undefined ? overrides.category : category;
     if (search) params.search = search;
     if (cat) params.category = cat;
-    if (minPrice) params.min_price = minPrice;
-    if (maxPrice) params.max_price = maxPrice;
     if (onOfferOnly) params.is_on_offer = true;
     const { data } = await client.get("/products/", { params });
     setProducts(data.results || data);
@@ -60,40 +66,34 @@ export default function Home() {
       )}
 
       {categories.length > 0 && (
-        <div className="category-chips">
-          {categories.map((c) => (
-            <button
-              key={c.id}
-              className={`chip ${category === c.slug ? "active" : ""}`}
-              onClick={() => selectCategory(c.slug)}
-            >
-              {c.name}
-            </button>
-          ))}
+        <div className="category-boxes">
+          <button
+            className={`category-box ${category === "" ? "active" : ""}`}
+            onClick={() => selectCategory("")}
+          >
+            <LayoutGrid size={26} />
+            <span>All items</span>
+          </button>
+          {categories.map((c) => {
+            const Icon = iconForCategory(c.slug);
+            return (
+              <button
+                key={c.id}
+                className={`category-box ${category === c.slug ? "active" : ""}`}
+                onClick={() => selectCategory(c.slug)}
+              >
+                <Icon size={26} />
+                <span>{c.name}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
       <div className="searchbar card">
-        <div className="field">
+        <div className="field" style={{ flex: 1, minWidth: 220 }}>
           <label><Search size={14} style={{ verticalAlign: "-2px" }} /> Search</label>
           <input placeholder="Search cells, cookers, sufurias..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Category</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.slug}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="field">
-          <label>Min price</label>
-          <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Max price</label>
-          <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
         </div>
         <div className="field" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" style={{ width: "auto" }} checked={onOfferOnly} onChange={(e) => setOnOfferOnly(e.target.checked)} />
@@ -101,7 +101,7 @@ export default function Home() {
         </div>
         <button className="btn" onClick={() => runSearch()}>
           <SlidersHorizontal size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} />
-          Filter
+          Search
         </button>
       </div>
 

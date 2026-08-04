@@ -1,17 +1,40 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
-const STORAGE_KEY = "hocklife_cart";
+
+// Cart is stored per-user (keyed by their account id), not as one shared
+// browser-wide cart. That way, logging in with a specific account always
+// shows that account's own saved cart - even after logging out and back in
+// later, or if a different person logs into the same browser.
+const keyFor = (userId) => `hocklife_cart:${userId}`;
+
+function loadCartFor(userId) {
+  if (!userId) return [];
+  try {
+    const saved = localStorage.getItem(keyFor(userId));
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user } = useAuth();
+  const [items, setItems] = useState([]);
 
+  // Whenever who's logged in changes (login, logout, or switching
+  // accounts), load that specific account's saved cart instead of
+  // whatever was showing before.
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+    setItems(loadCartFor(user?.id));
+  }, [user?.id]);
+
+  // Persist every change to the currently logged-in user's own cart slot.
+  useEffect(() => {
+    if (!user?.id) return;
+    localStorage.setItem(keyFor(user.id), JSON.stringify(items));
+  }, [items, user?.id]);
 
   const addItem = (product, quantity = 1) => {
     setItems((prev) => {
@@ -29,7 +52,11 @@ export function CartProvider({ children }) {
   };
 
   const removeItem = (id) => setItems((prev) => prev.filter((i) => i.id !== id));
-  const clearCart = () => setItems([]);
+
+  const clearCart = () => {
+    setItems([]);
+    if (user?.id) localStorage.removeItem(keyFor(user.id));
+  };
 
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const count = items.reduce((sum, i) => sum + i.quantity, 0);

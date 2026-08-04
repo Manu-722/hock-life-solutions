@@ -31,9 +31,16 @@ export default function AdminProducts() {
   const [imageFile, setImageFile] = useState(null);
   const [message, setMessage] = useState("");
 
+  const [loadError, setLoadError] = useState("");
+
   const loadAll = () => {
-    client.get("/products/categories/").then((r) => setCategories(r.data));
-    client.get("/products/").then((r) => setProducts(r.data.results || r.data));
+    setLoadError("");
+    client.get("/products/categories/").then((r) => setCategories(r.data)).catch(() => {
+      setLoadError("Couldn't load categories. Is the backend server running? (Try: python manage.py seed_categories)");
+    });
+    client.get("/products/").then((r) => setProducts(r.data.results || r.data)).catch(() => {
+      setLoadError("Couldn't load products. Is the backend server running?");
+    });
   };
 
   useEffect(loadAll, []);
@@ -41,7 +48,7 @@ export default function AdminProducts() {
   const selectedCategory = categories.find((c) => String(c.id) === String(form.category));
   const categorySlug = selectedCategory?.slug || "";
   const isInduction = categorySlug.includes("induction");
-  const isSufuria = categorySlug.includes("sufuria") || categorySlug.includes("kitchen");
+  const isSufuria = categorySlug.includes("sufuria") || categorySlug.includes("kitchen") || categorySlug.includes("pan");
 
   const update = (key) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -151,6 +158,12 @@ export default function AdminProducts() {
 
   return (
     <div>
+      {loadError && (
+        <div className="card" style={{ borderColor: "var(--hl-danger)", marginBottom: 20 }}>
+          <p className="status-rejected">{loadError}</p>
+          <button className="btn secondary" onClick={loadAll}>Try again</button>
+        </div>
+      )}
       <div className="card" style={{ maxWidth: 640, marginBottom: 24 }}>
         <h3>{form.id ? `Edit product #${form.id}` : "Add a new product"}</h3>
         {message && <p className="status-approved">{message}</p>}
@@ -192,7 +205,7 @@ export default function AdminProducts() {
 
           {isSufuria && (
             <>
-              <h4 style={{ color: "var(--hl-amber)" }}>Sufuria / Kitchenware details</h4>
+              <h4 style={{ color: "var(--hl-amber)" }}>Sufuria / Pan details</h4>
               <div className="field"><label>Size</label><input value={form.size} onChange={update("size")} placeholder="e.g. 28cm / 5 Litres" required /></div>
               <div className="field"><label>Material</label><input value={form.material} onChange={update("material")} placeholder="e.g. Aluminium" required /></div>
               <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>

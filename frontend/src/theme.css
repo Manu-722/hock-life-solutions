@@ -148,14 +148,27 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 .product-card {
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); border-color: var(--hl-amber); }
-.product-card img { width: 100%; height: 170px; object-fit: cover; border-radius: 8px; background: var(--hl-off-white); transition: transform .3s ease; }
-.product-card:hover img { transform: scale(1.03); }
+
+.product-image-wrap { position: relative; }
+.product-image-wrap img { width: 100%; height: 170px; object-fit: cover; border-radius: 8px; background: var(--hl-off-white); transition: transform .3s ease; display: block; }
+.product-card:hover .product-image-wrap img { transform: scale(1.03); }
+
+.badge-corner-left { position: absolute; top: 10px; left: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.badge-corner-right { position: absolute; top: 10px; right: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+/* Body flexes to fill remaining card height, pushing the button to the
+   bottom no matter how long the name/description is - this is what keeps
+   every "Add to cart" button aligned across the whole product grid. */
+.product-card-body { display: flex; flex-direction: column; flex: 1; }
 .product-card h3 { margin: 10px 0 2px; font-size: 1.05rem; }
 .product-card .price { color: var(--hl-amber-dark); font-weight: 700; font-size: 1.15rem; }
 .product-card .old-price { text-decoration: line-through; color: var(--hl-gray-dim); margin-right: 8px; font-size: 0.9rem; }
-.product-card .btn { width: 100%; margin-top: 10px; }
+.product-card .btn { width: 100%; margin-top: auto; }
 
 .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; }
 .badge.offer { background: linear-gradient(120deg, var(--hl-amber-light), var(--hl-amber)); color: var(--hl-black); }
@@ -291,18 +304,25 @@ tbody tr:hover { background: var(--hl-off-white); }
 .hero h1 .accent { color: var(--hl-amber-dark); }
 .hero p { color: var(--hl-gray); font-size: 1.05rem; margin: 0; }
 
-/* --- Category chips --- */
-.category-chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0 4px; }
-.chip {
-  background: var(--hl-white); border: 1px solid var(--hl-border); color: var(--hl-gray);
-  padding: 8px 16px; border-radius: 999px; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+/* --- Category boxes (used instead of a dropdown to filter products) --- */
+.category-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 24px 0 8px;
+}
+.category-box {
+  background: var(--hl-white); border: 1.5px solid var(--hl-border); color: var(--hl-gray);
+  border-radius: var(--radius); padding: 20px 14px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-size: 0.92rem; font-weight: 700; text-align: center;
   transition: all .15s ease;
 }
-.chip:hover { border-color: var(--hl-amber); color: var(--hl-ink); }
-.chip.active {
-  background: var(--hl-black);
-  color: var(--hl-white); border-color: var(--hl-black);
+.category-box:hover { border-color: var(--hl-amber); color: var(--hl-ink); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+.category-box.active {
+  background: var(--hl-black); color: var(--hl-white); border-color: var(--hl-black);
 }
+.category-box.active svg { color: var(--hl-amber); }
 
 /* --- Empty states --- */
 .empty-state {
