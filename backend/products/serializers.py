@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, InductionCookerSpec, Product, SufuriaSpec
+from .models import Category, InductionCookerSpec, Product, Review, SufuriaSpec
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,3 +59,12 @@ class ProductSerializer(serializers.ModelSerializer):
         if sufuria_data is not None:
             SufuriaSpec.objects.update_or_create(product=instance, defaults=sufuria_data)
         return instance
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ["id", "product", "username", "rating", "comment", "created_at", "updated_at"]
+        read_only_fields = ["username", "created_at", "updated_at"]

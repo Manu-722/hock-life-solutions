@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -73,3 +74,22 @@ class SufuriaSpec(models.Model):
 
     def __str__(self):
         return f"Sufuria spec for {self.product.name}"
+
+
+class Review(models.Model):
+    """A customer's star rating + comment on a product. Submitting a review
+    for a product you've already reviewed updates your existing one instead
+    of creating a duplicate - this is how a user 'edits' their review."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("product", "user")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.product.name}: {self.rating}/5"

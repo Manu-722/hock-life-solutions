@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import PasswordResetCode
@@ -43,6 +44,15 @@ class MeView(APIView):
     def get(self, request):
         return Response(UserSerializer(request.user).data)
 
+    def patch(self, request):
+        """Lets a logged-in user edit their own profile (name, email, phone).
+        Username, role, and admin status stay read-only here regardless of
+        what's sent - see UserSerializer's read_only_fields."""
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 class ChangePasswordView(APIView):
     """Used both for a voluntary password change in Settings, and to force
@@ -80,18 +90,26 @@ class ForgotPasswordView(APIView):
         code = PasswordResetCode.generate_code()
         PasswordResetCode.objects.create(user=user, code=code)
 
-        send_mail(
-            subject="Your Hawk Life Solutions password reset code",
-            message=(
-                f"Hi {user.first_name or user.username},\n\n"
-                f"Your password reset code is: {code}\n"
-                f"This code expires in {settings.PASSWORD_RESET_CODE_LIFETIME_MINUTES} minutes.\n\n"
-                "If you didn't request this, you can ignore this email."
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=True,
-        )
+        try:
+            send_mail(
+                subject="Your Hawk Life Solutions password reset code",
+                message=(
+                    f"Hi {user.first_name or user.username},\n\n"
+                    f"Your password reset code is: {code}\n"
+                    f"This code expires in {settings.PASSWORD_RESET_CODE_LIFETIME_MINUTES} minutes.\n\n"
+                    "If you didn't request this, you can ignore this email."
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+        except Exception as exc:
+            # Don't leak whether the email exists to the client, but DO log
+            # the real reason to the server console - a misconfigured SMTP
+            # backend (wrong password, blocked port, etc.) otherwise fails
+            # completely silently and looks like "codes never arrive".
+            print(f"[ForgotPassword] Could not send reset email to {user.email}: {exc}")
+
         return Response({"detail": "If that email exists, a code has been sent."})
 
 
@@ -123,3 +141,73 @@ class ResetPasswordView(APIView):
         reset_code.used = True
         reset_code.save()
         return Response({"detail": "Password reset successfully. You can now log in."})
+
+
+class FirebaseLoginView(APIView):
+    """
+    Google Sign-In via Firebase Authentication.
+
+    The frontend uses Firebase's own SDK to run the Google sign-in popup,
+    then sends us the resulting Firebase ID token. We verify that token
+    server-side with the Firebase Admin SDK (proving it's genuinely from
+    Google/Firebase and hasn't been tampered with), then find-or-create a
+    normal CUSTOMER account for that email and hand back the exact same
+    JWT response shape as the regular /accounts/login/ endpoint, so the
+    frontend's existing login-success handling works unchanged.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        id_token = request.data.get("id_token")
+        if not id_token:
+            return Response({"detail": "id_token is required."}, status=400)
+
+        if not settings.FIREBASE_SERVICE_ACCOUNT_PATH:
+            return Response(
+                {"detail": "Google sign-in isn't configured on the server yet."},
+                status=503,
+            )
+
+        try:
+            import firebase_admin
+            from firebase_admin import auth as firebase_auth
+
+            if not firebase_admin._apps:
+                return Response(
+                    {"detail": "Google sign-in isn't configured on the server yet."},
+                    status=503,
+                )
+            decoded = firebase_auth.verify_id_token(id_token)
+        except Exception:
+            return Response({"detail": "Invalid or expired Google sign-in token."}, status=401)
+
+        email = decoded.get("email")
+        if not email:
+            return Response({"detail": "Google account has no email address."}, status=400)
+
+        name = decoded.get("name", "")
+        first_name, _, last_name = name.partition(" ")
+
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            user = User.objects.create(
+                username=email.split("@")[0] + "_" + decoded.get("uid", "")[:6],
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                role=User.Role.CUSTOMER,
+            )
+            # Firebase already verified this person's identity - they never
+            # need a local password, so set one they can't guess or use.
+            user.set_unusable_password()
+            user.save()
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "role": user.role,
+            "is_admin": user.is_admin,
+            "username": user.username,
+            "must_change_password": user.must_change_password,
+        })

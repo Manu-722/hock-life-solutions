@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from . import views
@@ -12,7 +12,7 @@ urlpatterns = [
     path("forgot-password/", views.ForgotPasswordView.as_view(), name="forgot-password"),
     path("reset-password/", views.ResetPasswordView.as_view(), name="reset-password"),
 
-    # Google login (via dj-rest-auth + allauth). The frontend sends the
-    # Google ID token it gets from Google's SDK to this endpoint.
-    path("google/", include("accounts.google_urls")),
+    # Google Sign-In via Firebase Authentication. The frontend gets an ID
+    # token from Firebase's own SDK and sends it here to be verified.
+    path("firebase-login/", views.FirebaseLoginView.as_view(), name="firebase-login"),
 ]

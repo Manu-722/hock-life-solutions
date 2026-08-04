@@ -17,3 +17,16 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.is_authenticated and request.user.is_admin)
+
+
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """Used for reviews: only the person who wrote a review (or an admin)
+    can edit or delete it. Everyone can read; any logged-in user can post."""
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(
+            request.user and request.user.is_authenticated
+            and (obj.user_id == request.user.id or request.user.is_admin)
+        )
