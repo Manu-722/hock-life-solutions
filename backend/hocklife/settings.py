@@ -202,6 +202,12 @@ SOCIALACCOUNT_PROVIDERS = {
         "SCOPE": ["profile", "email"],
     }
 }
+# ---------------------------------------------------------------------------
+# FIREBASE
+# ---------------------------------------------------------------------------
+FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get(
+    "FIREBASE_SERVICE_ACCOUNT_PATH", ""
+)
 
 # ---------------------------------------------------------------------------
 # HOCK LIFE SOLUTIONS - BUSINESS SETTINGS
