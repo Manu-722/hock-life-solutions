@@ -178,7 +178,12 @@ class FirebaseLoginView(APIView):
                     status=503,
                 )
             decoded = firebase_auth.verify_id_token(id_token)
-        except Exception:
+        except Exception as exc:
+            # Log the REAL reason to the server console - wrong project ID,
+            # expired token, clock skew, malformed service account file,
+            # etc. all get swallowed into one vague message for the client,
+            # but you need the real detail to debug which one it actually is.
+            print(f"[FirebaseLogin] Token verification failed: {type(exc).__name__}: {exc}")
             return Response({"detail": "Invalid or expired Google sign-in token."}, status=401)
 
         email = decoded.get("email")

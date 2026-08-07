@@ -17,7 +17,11 @@ class AccountsConfig(AppConfig):
         from django.conf import settings
 
         path = settings.FIREBASE_SERVICE_ACCOUNT_PATH
-        if not path or not os.path.exists(path):
+        if not path:
+            print("[Firebase] FIREBASE_SERVICE_ACCOUNT_PATH is not set in .env - Google sign-in disabled.")
+            return
+        if not os.path.exists(path):
+            print(f"[Firebase] FIREBASE_SERVICE_ACCOUNT_PATH is set to '{path}' but no file exists there - Google sign-in disabled.")
             return
 
         try:
@@ -27,8 +31,9 @@ class AccountsConfig(AppConfig):
             if not firebase_admin._apps:
                 cred = credentials.Certificate(path)
                 firebase_admin.initialize_app(cred)
-        except Exception:
+                print("[Firebase] Admin SDK initialized successfully - Google sign-in is active.")
+        except Exception as exc:
             # Don't let a bad/missing Firebase config take down the whole
-            # server - Firebase login will just fail gracefully at request
-            # time instead (see FirebaseLoginView).
-            pass
+            # server - but DO print exactly why it failed, since a silent
+            # `pass` here is impossible to debug from the frontend side.
+            print(f"[Firebase] Failed to initialize Admin SDK: {type(exc).__name__}: {exc}")
