@@ -36,6 +36,28 @@ class ProductSerializer(serializers.ModelSerializer):
             "created_at", "updated_at",
         ]
 
+    def to_representation(self, instance):
+        """
+        Always return a full absolute URL for the image (or null), never a
+        bare relative path like "/media/products/x.jpg" - a relative path
+        only works by accident when the frontend happens to be served from
+        the same origin as the API. Once deployed (frontend on Vercel,
+        backend on Render, different domains entirely) a relative path
+        would silently 404, and this also removes any dependency on the
+        DRF request context being populated a particular way.
+        """
+        data = super().to_representation(instance)
+        if instance.image:
+            request = self.context.get("request")
+            if request is not None:
+                data["image"] = request.build_absolute_uri(instance.image.url)
+            else:
+                from django.conf import settings
+                data["image"] = f"{settings.BACKEND_PUBLIC_URL.rstrip('/')}{instance.image.url}"
+        else:
+            data["image"] = None
+        return data
+
     def create(self, validated_data):
         induction_data = validated_data.pop("induction_cooker_spec", None)
         sufuria_data = validated_data.pop("sufuria_spec", None)

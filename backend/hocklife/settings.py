@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
 
     "rest_framework",
     "rest_framework_simplejwt",
@@ -42,22 +41,12 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
 
-    # Google login
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
-
     # Our apps
     "accounts",
     "products",
     "offers",
     "orders",
 ]
-
-SITE_ID = 1
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -68,7 +57,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "hocklife.urls"
@@ -126,6 +114,14 @@ STATIC_URL = "static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# The backend's own public URL - used to build absolute image URLs that
+# work reliably regardless of how a request came in. This matters a lot
+# once the frontend (e.g. on Vercel) and backend (e.g. on Render) live on
+# completely different domains - a relative "/media/..." path would try to
+# load from the frontend's own domain and 404. Set this to your real
+# Render URL (e.g. https://hawklife-api.onrender.com) once deployed.
+BACKEND_PUBLIC_URL = os.environ.get("BACKEND_PUBLIC_URL", "http://localhost:8000")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------------------------
@@ -150,14 +146,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-}
-
-# This project uses JWT (via simplejwt) for authentication, not DRF's older
-# authtoken system - so dj-rest-auth shouldn't try to create/manage tokens
-# through rest_framework.authtoken. This silences its "TOKEN_MODEL" warning.
-REST_AUTH = {
-    "USE_JWT": True,
-    "TOKEN_MODEL": None,
 }
 
 # ---------------------------------------------------------------------------
@@ -186,29 +174,12 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <
 PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 
 # ---------------------------------------------------------------------------
-# GOOGLE LOGIN
-# Create OAuth credentials at https://console.cloud.google.com/apis/credentials
-# and put the client ID/secret in environment variables.
+# FIREBASE (Google Sign-In)
+# Download a service account key from Firebase Console -> Project Settings
+# -> Service Accounts -> Generate new private key. Save the JSON file
+# somewhere OUTSIDE version control and point this at it.
 # ---------------------------------------------------------------------------
-GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
-GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "")
-
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {
-            "client_id": GOOGLE_OAUTH_CLIENT_ID,
-            "secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "key": "",
-        },
-        "SCOPE": ["profile", "email"],
-    }
-}
-# ---------------------------------------------------------------------------
-# FIREBASE
-# ---------------------------------------------------------------------------
-FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get(
-    "FIREBASE_SERVICE_ACCOUNT_PATH", ""
-)
+FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "")
 
 # ---------------------------------------------------------------------------
 # HOCK LIFE SOLUTIONS - BUSINESS SETTINGS

@@ -16,8 +16,7 @@ class AccountsConfig(AppConfig):
         # is set in .env and the request would fail with a friendly error.
         from django.conf import settings
 
-        # path = settings.FIREBASE_SERVICE_ACCOUNT_PATH
-        path = getattr(settings, "FIREBASE_SERVICE_ACCOUNT_PATH", "")
+        path = settings.FIREBASE_SERVICE_ACCOUNT_PATH
         if not path or not os.path.exists(path):
             return
 
