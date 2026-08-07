@@ -15,6 +15,10 @@ export default function Login() {
   const navigate = useNavigate();
 
   const afterLogin = (data) => {
+    // Same login flow for everyone, whether via username/password or
+    // Google. The backend tells us if this account is an admin - if so we
+    // greet them by name as admin and send them to the dashboard;
+    // otherwise it's a completely normal shopper login.
     if (data.is_admin) {
       setGreeting(`Welcome, ${data.username} (Admin)`);
       setTimeout(() => navigate(data.must_change_password ? "/settings" : "/admin"), 900);
@@ -39,6 +43,9 @@ export default function Login() {
     setError("");
     setGoogleLoading(true);
     try {
+      // Firebase handles the actual Google popup and identity verification.
+      // We only need the resulting ID token, which our backend verifies
+      // independently before issuing our own JWTs.
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
       const { data } = await client.post("/accounts/firebase-login/", { id_token: idToken });
@@ -48,6 +55,12 @@ export default function Login() {
       if (err?.code === "auth/popup-closed-by-user") {
         // User just closed the popup - not a real error, stay quiet.
       } else {
+        // TEMPORARY DEBUG: show the real error as an alert so it's
+        // impossible to miss, since console-based debugging wasn't
+        // surfacing it. Remove this alert() line once the real cause is
+        // found and fixed.
+        alert("Google sign-in error:\n" + (err?.code || "no code") + "\n" + (err?.message || String(err)));
+        console.error("Google sign-in error:", err?.code, err?.message, err);
         setError("Google sign-in failed. Please try again.");
       }
     } finally {
