@@ -25,10 +25,10 @@ export default function Footer() {
         <div>
           <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>Contact & payment</h4>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Phone size={15} /> Available at checkout
+            <Phone size={15} /> +254 112660355
           </p>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Mail size={15} /> support@hawklife.com
+            <Mail size={15} /> lifesolutions.hawk@gmail.com
           </p>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8 }}>
             <MapPin size={15} /> Nairobi, Kenya
