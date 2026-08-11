@@ -33,7 +33,7 @@ export default function ProductDetail() {
         <img
           src={product.image || "https://placehold.co/500x400?text=Hawk+Life"}
           alt={product.name}
-          style={{ width: 320, height: 260, objectFit: "cover", borderRadius: 8 }}
+          className="product-detail-img"
         />
         <div style={{ flex: 1, minWidth: 260 }}>
           <div>

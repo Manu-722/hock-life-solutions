@@ -225,34 +225,36 @@ export default function AdminProducts() {
       </div>
 
       <h3 className="section-title">All products</h3>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Offer</th><th></th></tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.id}>
-              <td>{p.name}</td>
-              <td>{p.category_name}</td>
-              <td>KES {Number(p.price).toLocaleString()}</td>
-              <td>
-                <button className="btn secondary" onClick={() => toggleStock(p)}>
-                  {p.in_stock ? "In stock" : "Out of stock"}
-                </button>
-              </td>
-              <td>
-                <button className="btn secondary" onClick={() => toggleOffer(p)}>
-                  {p.is_on_offer ? "On offer" : "Not on offer"}
-                </button>
-              </td>
-              <td style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={() => editProduct(p)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
-                <button className="btn danger" onClick={() => deleteProduct(p.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Offer</th><th></th></tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td>{p.category_name}</td>
+                <td>KES {Number(p.price).toLocaleString()}</td>
+                <td>
+                  <button className="btn secondary" onClick={() => toggleStock(p)}>
+                    {p.in_stock ? "In stock" : "Out of stock"}
+                  </button>
+                </td>
+                <td>
+                  <button className="btn secondary" onClick={() => toggleOffer(p)}>
+                    {p.is_on_offer ? "On offer" : "Not on offer"}
+                  </button>
+                </td>
+                <td style={{ display: "flex", gap: 8 }}>
+                  <button className="btn" onClick={() => editProduct(p)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
+                  <button className="btn danger" onClick={() => deleteProduct(p.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

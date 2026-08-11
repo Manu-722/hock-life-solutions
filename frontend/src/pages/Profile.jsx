@@ -111,22 +111,24 @@ export default function Profile() {
       {orders.length === 0 ? (
         <p>You haven't placed any orders yet.</p>
       ) : (
-        <table>
-          <thead>
-            <tr><th>Order #</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th></tr>
-          </thead>
-          <tbody>
-            {orders.map((o) => (
-              <tr key={o.id}>
-                <td>#{o.id}</td>
-                <td>{o.items.map((i) => `${i.product_name_snapshot} x${i.quantity}`).join(", ")}</td>
-                <td>KES {Number(o.total_amount).toLocaleString()}</td>
-                <td className={statusClass[o.status]}>{o.status === "APPROVED" ? "Approved" : o.status === "REJECTED" ? "Rejected" : "Pending"}</td>
-                <td>{new Date(o.created_at).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Order #</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th></tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr key={o.id}>
+                  <td>#{o.id}</td>
+                  <td>{o.items.map((i) => `${i.product_name_snapshot} x${i.quantity}`).join(", ")}</td>
+                  <td>KES {Number(o.total_amount).toLocaleString()}</td>
+                  <td className={statusClass[o.status]}>{o.status === "APPROVED" ? "Approved" : o.status === "REJECTED" ? "Rejected" : "Pending"}</td>
+                  <td>{new Date(o.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

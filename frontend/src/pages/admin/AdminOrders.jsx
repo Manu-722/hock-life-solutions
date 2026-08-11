@@ -62,31 +62,33 @@ export default function AdminOrders() {
       {orders.length === 0 ? (
         <p style={{ color: "var(--hl-gray)" }}>No orders yet - they'll appear here as soon as a customer checks out.</p>
       ) : (
-        <table>
-          <thead>
-            <tr><th>Order #</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th><th></th></tr>
-          </thead>
-          <tbody>
-            {orders.map((o) => (
-              <tr key={o.id}>
-                <td>#{o.id}</td>
-                <td>{o.customer_username}</td>
-                <td>{o.items.map((i) => `${i.product_name_snapshot} x${i.quantity}`).join(", ")}</td>
-                <td>KES {Number(o.total_amount).toLocaleString()}</td>
-                <td className={statusClass[o.status]}>{o.status}</td>
-                <td>{new Date(o.created_at).toLocaleString()}</td>
-                <td style={{ display: "flex", gap: 8 }}>
-                  {o.status === "PENDING" && (
-                    <>
-                      <button className="btn" onClick={() => approve(o.id)}><CheckCircle2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Approve</button>
-                      <button className="btn danger" onClick={() => reject(o.id)}><XCircle size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Reject</button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Order #</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th><th></th></tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr key={o.id}>
+                  <td>#{o.id}</td>
+                  <td>{o.customer_username}</td>
+                  <td>{o.items.map((i) => `${i.product_name_snapshot} x${i.quantity}`).join(", ")}</td>
+                  <td>KES {Number(o.total_amount).toLocaleString()}</td>
+                  <td className={statusClass[o.status]}>{o.status}</td>
+                  <td>{new Date(o.created_at).toLocaleString()}</td>
+                  <td style={{ display: "flex", gap: 8 }}>
+                    {o.status === "PENDING" && (
+                      <>
+                        <button className="btn" onClick={() => approve(o.id)}><CheckCircle2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Approve</button>
+                        <button className="btn danger" onClick={() => reject(o.id)}><XCircle size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Reject</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

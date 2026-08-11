@@ -347,3 +347,96 @@ tbody tr:hover { background: var(--hl-off-white); }
 @media (max-width: 700px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+/* --- Horizontally-scrollable table wrapper (used in admin pages, cart,
+   and order history) so wide tables never break the page layout on small
+   screens - they scroll within their own box instead of overflowing. --- */
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll table { min-width: 560px; }
+
+/* --- Product detail page image (replaces old fixed inline width/height
+   so it can shrink properly on small screens) --- */
+.product-detail-img {
+  width: 320px; height: 260px; object-fit: cover; border-radius: 8px; flex-shrink: 0;
+}
+
+/* =====================================================================
+   RESPONSIVE BREAKPOINTS
+   ===================================================================== */
+
+/* Tablet and below */
+@media (max-width: 900px) {
+  .container { padding: 0 16px 50px; }
+  .hero { padding: 28px 0 4px; }
+  .hero h1 { font-size: 1.9rem; }
+  .hero p { font-size: 0.95rem; }
+  .slideshow { height: 260px; }
+  .footer-grid { gap: 24px; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .container { padding: 0 14px 40px; }
+
+  /* Navbar: shrink brand, tighten spacing, let nav wrap onto its own
+     row cleanly under the logo instead of squeezing everything sideways. */
+  .navbar { padding: 12px 16px; gap: 8px; }
+  .navbar .brand { font-size: 1.1rem; }
+  .navbar nav { gap: 12px; width: 100%; justify-content: flex-start; }
+  .navbar nav a, .navbar nav button.linklike { font-size: 0.88rem; }
+  .admin-pill { font-size: 0.7rem; padding: 3px 10px; }
+
+  .hero { padding: 20px 0 2px; }
+  .hero h1 { font-size: 1.5rem; line-height: 1.25; }
+  .hero p { font-size: 0.88rem; }
+
+  .slideshow { height: 190px; margin: 16px 0; }
+  .slideshow .caption { padding: 20px 14px 12px; }
+  .slideshow .caption h2 { font-size: 1.1rem; }
+  .slideshow .caption p { font-size: 0.82rem; }
+
+  /* Search bar: stack fields full-width instead of squeezing them into
+     a cramped single row. */
+  .searchbar { flex-direction: column; align-items: stretch; padding: 14px; }
+  .searchbar .field { min-width: 0; width: 100%; }
+  .searchbar .btn { width: 100%; }
+
+  .category-boxes { grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; }
+  .category-box { padding: 14px 8px; font-size: 0.8rem; }
+  .category-box svg { width: 20px; height: 20px; }
+
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .product-card { padding: 12px; }
+  .product-image-wrap img { height: 120px; }
+  .product-card h3 { font-size: 0.92rem; }
+  .product-card .price { font-size: 1rem; }
+
+  .card { padding: 16px; }
+  .form-card { margin: 30px auto; max-width: 100%; }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.05rem; }
+
+  /* Product detail page: image goes full-width above the details instead
+     of sitting rigidly beside them. */
+  .product-detail-img { width: 100%; height: 200px; }
+
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px; }
+  .stat-card .stat-value { font-size: 1.35rem; }
+
+  .admin-sidebar a { font-size: 0.85rem; padding: 9px 12px; }
+
+  .footer-grid { grid-template-columns: 1fr; text-align: center; }
+  .site-footer p, .site-footer div[style*="align-items"] { justify-content: center !important; }
+
+  .checkout-card, .checkout-success, .form-card { margin: 20px auto; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .category-boxes { grid-template-columns: repeat(2, 1fr); }
+  .navbar .brand { font-size: 1rem; }
+}

@@ -113,22 +113,24 @@ export default function AdminSlideshow() {
       {slides.length === 0 ? (
         <p style={{ color: "var(--hl-gray)" }}>No slides yet - add one above.</p>
       ) : (
-        <table>
-          <thead><tr><th>Title</th><th>Order</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            {slides.map((s) => (
-              <tr key={s.id}>
-                <td>{s.title}</td>
-                <td>{s.order}</td>
-                <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
-                <td style={{ display: "flex", gap: 8 }}>
-                  <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
-                  <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="table-scroll">
+          <table>
+            <thead><tr><th>Title</th><th>Order</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              {slides.map((s) => (
+                <tr key={s.id}>
+                  <td>{s.title}</td>
+                  <td>{s.order}</td>
+                  <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
+                  <td style={{ display: "flex", gap: 8 }}>
+                    <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
+                    <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
