@@ -98,6 +98,30 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
   font-size: 0.78rem;
 }
 
+/* --- Mobile nav trigger (hamburger + cart icon) - hidden on desktop,
+   shown only below the phone breakpoint (see media query below) --- */
+.nav-mobile-trigger { display: none; align-items: center; gap: 16px; }
+.mobile-cart-icon { position: relative; color: var(--hl-white); display: flex; }
+.cart-count-dot {
+  position: absolute; top: -8px; right: -10px;
+  background: var(--hl-amber); color: var(--hl-black);
+  font-size: 0.65rem; font-weight: 800; line-height: 1;
+  border-radius: 999px; padding: 3px 5px; min-width: 16px; text-align: center;
+}
+.hamburger-btn { background: none; border: none; color: var(--hl-white); cursor: pointer; display: flex; padding: 2px; }
+
+.mobile-menu {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--hl-black); border-bottom: 3px solid var(--hl-amber);
+  padding: 18px 20px; display: flex; flex-direction: column; gap: 16px;
+  z-index: 60; box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+.mobile-menu a, .mobile-menu button.linklike {
+  color: var(--hl-white); font-size: 1rem; font-weight: 500;
+  background: none; border: none; text-align: left; cursor: pointer; padding: 4px 0;
+}
+.mobile-menu a:hover, .mobile-menu button.linklike:hover { color: var(--hl-amber); }
+
 /* --- Buttons: black primary action so they stand out on white --- */
 .btn {
   background: var(--hl-black);
@@ -378,12 +402,11 @@ tbody tr:hover { background: var(--hl-off-white); }
 @media (max-width: 600px) {
   .container { padding: 0 14px 40px; }
 
-  /* Navbar: shrink brand, tighten spacing, let nav wrap onto its own
-     row cleanly under the logo instead of squeezing everything sideways. */
+  /* Navbar: hide the full link row, show cart icon + hamburger instead */
+  .nav-desktop { display: none; }
+  .nav-mobile-trigger { display: flex; }
   .navbar { padding: 12px 16px; gap: 8px; }
   .navbar .brand { font-size: 1.1rem; }
-  .navbar nav { gap: 12px; width: 100%; justify-content: flex-start; }
-  .navbar nav a, .navbar nav button.linklike { font-size: 0.88rem; }
   .admin-pill { font-size: 0.7rem; padding: 3px 10px; }
 
   .hero { padding: 20px 0 2px; }
@@ -405,11 +428,19 @@ tbody tr:hover { background: var(--hl-off-white); }
   .category-box { padding: 14px 8px; font-size: 0.8rem; }
   .category-box svg { width: 20px; height: 20px; }
 
-  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-  .product-card { padding: 12px; }
-  .product-image-wrap img { height: 120px; }
-  .product-card h3 { font-size: 0.92rem; }
-  .product-card .price { font-size: 1rem; }
+  /* Smaller, denser product cards so more fit per row on a phone screen */
+  .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .product-card { padding: 10px; }
+  .product-image-wrap img { height: 100px; }
+  .product-card h3 { font-size: 0.82rem; margin: 6px 0 1px; line-height: 1.25; }
+  .product-card p { font-size: 0.78rem; margin: 2px 0; }
+  .product-card .price { font-size: 0.88rem; }
+  .product-card .old-price { font-size: 0.72rem; }
+  .product-card .btn { font-size: 0.78rem; padding: 8px 10px; margin-top: 8px; }
+  .badge-corner-left, .badge-corner-right { top: 6px; }
+  .badge-corner-left { left: 6px; }
+  .badge-corner-right { right: 6px; }
+  .badge { font-size: 0.62rem; padding: 2px 7px; }
 
   .card { padding: 16px; }
   .form-card { margin: 30px auto; max-width: 100%; }
@@ -436,7 +467,8 @@ tbody tr:hover { background: var(--hl-off-white); }
 
 /* Very small phones */
 @media (max-width: 380px) {
-  .grid { grid-template-columns: 1fr 1fr; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .product-image-wrap img { height: 90px; }
   .category-boxes { grid-template-columns: repeat(2, 1fr); }
   .navbar .brand { font-size: 1rem; }
 }
