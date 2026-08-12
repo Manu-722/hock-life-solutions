@@ -68,7 +68,7 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
   font-size: 1.35rem;
   letter-spacing: -0.02em;
 }
-.navbar nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.navbar nav.nav-desktop { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 .navbar nav a, .navbar nav button.linklike {
   color: var(--hl-white);
   background: none;
@@ -398,12 +398,16 @@ tbody tr:hover { background: var(--hl-off-white); }
   .footer-grid { gap: 24px; }
 }
 
-/* Phones */
+/* Phones - the hamburger takes over completely here: the full nav row is
+   hidden (this ".navbar .nav-desktop" rule has higher specificity than
+   the base ".navbar nav.nav-desktop" rule above, so it correctly wins),
+   so on a small screen there is NO duplication - only the logo, cart
+   icon, and hamburger button show, and every link lives inside the
+   slide-down .mobile-menu panel instead. */
 @media (max-width: 600px) {
   .container { padding: 0 14px 40px; }
 
-  /* Navbar: hide the full link row, show cart icon + hamburger instead */
-  .navbar nav.nav-desktop { display: flex; ... }
+  .navbar .nav-desktop { display: none; }
   .nav-mobile-trigger { display: flex; }
   .navbar { padding: 12px 16px; gap: 8px; }
   .navbar .brand { font-size: 1.1rem; }
