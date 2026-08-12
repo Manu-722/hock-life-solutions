@@ -403,7 +403,7 @@ tbody tr:hover { background: var(--hl-off-white); }
   .container { padding: 0 14px 40px; }
 
   /* Navbar: hide the full link row, show cart icon + hamburger instead */
-  .nav-desktop { display: none; }
+  .navbar nav.nav-desktop { display: flex; ... }
   .nav-mobile-trigger { display: flex; }
   .navbar { padding: 12px 16px; gap: 8px; }
   .navbar .brand { font-size: 1.1rem; }
