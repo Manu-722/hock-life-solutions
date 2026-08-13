@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--username", default="admin")
-        parser.add_argument("--email", default="admin@hawklife.com")
+        parser.add_argument("--email", default="lifesolutions.hawk@gmail.com")
         parser.add_argument(
             "--force",
             action="store_true",
