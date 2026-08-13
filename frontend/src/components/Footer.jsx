@@ -11,7 +11,7 @@ export default function Footer() {
             Hawk Life Solutions
           </div>
           <p style={{ color: "var(--hl-gray)", maxWidth: 320, marginTop: 10 }}>
-            Quality cells, induction cookers, and kitchenware — built for everyday Kenyan homes.
+            Quality induction cookers and kitchenware — built for everyday Kenyan homes.
           </p>
         </div>
 
