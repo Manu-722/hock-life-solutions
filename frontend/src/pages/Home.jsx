@@ -29,13 +29,19 @@ export default function Home() {
     client.get("/products/categories/").then((res) => setCategories(res.data));
   }, []);
 
+  // Accepts overrides so a caller can pass the NEW value of a filter
+  // immediately, instead of relying on React state (which hasn't updated
+  // yet in the same tick a checkbox/button was just clicked).
   const runSearch = async (overrides = {}) => {
     setLoading(true);
     const params = {};
     const cat = overrides.category !== undefined ? overrides.category : category;
+    const offerOnly = overrides.onOfferOnly !== undefined ? overrides.onOfferOnly : onOfferOnly;
+
     if (search) params.search = search;
     if (cat) params.category = cat;
-    if (onOfferOnly) params.is_on_offer = true;
+    if (offerOnly) params.is_on_offer = true;
+
     const { data } = await client.get("/products/", { params });
     setProducts(data.results || data);
     setLoading(false);
@@ -50,6 +56,15 @@ export default function Home() {
     const next = category === slug ? "" : slug;
     setCategory(next);
     runSearch({ category: next });
+  };
+
+  // "On offer only" now filters instantly the moment it's toggled - same
+  // instant behavior as the category boxes - instead of requiring a
+  // separate click on the Search button afterward.
+  const toggleOfferOnly = (e) => {
+    const next = e.target.checked;
+    setOnOfferOnly(next);
+    runSearch({ onOfferOnly: next });
   };
 
   return (
@@ -93,11 +108,22 @@ export default function Home() {
       <div className="searchbar card">
         <div className="field" style={{ flex: 1, minWidth: 220 }}>
           <label><Search size={14} style={{ verticalAlign: "-2px" }} /> Search</label>
-          <input placeholder="Search cells, cookers, sufurias..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input
+            placeholder="Search cells, cookers, sufurias..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") runSearch(); }}
+          />
         </div>
         <div className="field" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="checkbox" style={{ width: "auto" }} checked={onOfferOnly} onChange={(e) => setOnOfferOnly(e.target.checked)} />
-          <label style={{ margin: 0 }}>On offer only</label>
+          <input
+            type="checkbox"
+            id="offer-only-checkbox"
+            style={{ width: "auto" }}
+            checked={onOfferOnly}
+            onChange={toggleOfferOnly}
+          />
+          <label htmlFor="offer-only-checkbox" style={{ margin: 0, cursor: "pointer" }}>On offer only</label>
         </div>
         <button className="btn" onClick={() => runSearch()}>
           <SlidersHorizontal size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} />
@@ -110,7 +136,7 @@ export default function Home() {
       ) : products.length === 0 ? (
         <div className="empty-state">
           <PackageSearch size={40} />
-          <p>No products match your search.</p>
+          <p>{onOfferOnly ? "No items are currently on offer." : "No products match your search."}</p>
         </div>
       ) : (
         <div className="grid">
