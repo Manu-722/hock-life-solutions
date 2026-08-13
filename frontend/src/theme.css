@@ -44,7 +44,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 ::-webkit-scrollbar-thumb { background: #d5d5da; border-radius: 8px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--hl-amber-dark); }
 
-/* --- Navbar: stays black so the amber Hawk logo pops --- */
 .navbar {
   position: sticky;
   top: 0;
@@ -98,8 +97,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
   font-size: 0.78rem;
 }
 
-/* --- Mobile nav trigger (hamburger + cart icon) - hidden on desktop,
-   shown only below the phone breakpoint (see media query below) --- */
 .nav-mobile-trigger { display: none; align-items: center; gap: 16px; }
 .mobile-cart-icon { position: relative; color: var(--hl-white); display: flex; }
 .cart-count-dot {
@@ -122,7 +119,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 }
 .mobile-menu a:hover, .mobile-menu button.linklike:hover { color: var(--hl-amber); }
 
-/* --- Buttons: black primary action so they stand out on white --- */
 .btn {
   background: var(--hl-black);
   color: var(--hl-white);
@@ -155,7 +151,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--hl-gray-dim); font-size: 0.85rem; }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--hl-border); }
 
-/* --- Cards / Grid --- */
 .card {
   background: var(--hl-white);
   border: 1px solid var(--hl-border);
@@ -185,9 +180,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 .badge-corner-left { position: absolute; top: 10px; left: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 .badge-corner-right { position: absolute; top: 10px; right: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
-/* Body flexes to fill remaining card height, pushing the button to the
-   bottom no matter how long the name/description is - this is what keeps
-   every "Add to cart" button aligned across the whole product grid. */
 .product-card-body { display: flex; flex-direction: column; flex: 1; }
 .product-card h3 { margin: 10px 0 2px; font-size: 1.05rem; }
 .product-card .price { color: var(--hl-amber-dark); font-weight: 700; font-size: 1.15rem; }
@@ -198,7 +190,6 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 .badge.offer { background: linear-gradient(120deg, var(--hl-amber-light), var(--hl-amber)); color: var(--hl-black); }
 .badge.out { background: var(--hl-danger-bg); color: var(--hl-danger); border: 1px solid rgba(217,67,61,0.3); }
 
-/* --- Forms --- */
 input, select, textarea {
   background: var(--hl-white);
   border: 1px solid var(--hl-border);
@@ -219,7 +210,6 @@ label { display: block; margin-bottom: 6px; color: var(--hl-gray); font-size: 0.
 .form-card { max-width: 420px; margin: 60px auto; }
 .form-card h2 { text-align: center; margin-bottom: 4px; }
 
-/* --- Slideshow --- */
 .slideshow {
   position: relative; height: 360px; border-radius: var(--radius); overflow: hidden;
   margin: 24px 0; box-shadow: var(--shadow-lift); border: 1px solid var(--hl-border);
@@ -244,12 +234,10 @@ label { display: block; margin-bottom: 6px; color: var(--hl-gray); font-size: 0.
   margin: 24px 0; background: var(--hl-off-white); font-size: 0.95rem;
 }
 
-/* --- Search / filter bar --- */
 .searchbar { display: flex; gap: 14px; flex-wrap: wrap; margin: 18px 0 8px; align-items: end; background: var(--hl-off-white); }
 .searchbar .field { margin-bottom: 0; min-width: 160px; }
 .searchbar .btn { align-self: stretch; }
 
-/* --- Status pills --- */
 .status-pending, .status-approved, .status-rejected {
   display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
 }
@@ -269,7 +257,6 @@ th { color: var(--hl-amber-dark); font-weight: 600; font-size: 0.8rem; text-tran
 tbody tr { transition: background .12s ease; }
 tbody tr:hover { background: var(--hl-off-white); }
 
-/* --- Checkout --- */
 .checkout-card, .checkout-success { max-width: 520px; margin: 40px auto; }
 .checkout-success { text-align: center; }
 .success-badge {
@@ -287,7 +274,6 @@ tbody tr:hover { background: var(--hl-off-white); }
 .payment-row span { color: var(--hl-gray); }
 .payment-row strong { font-size: 1.05rem; }
 
-/* --- Admin dashboard layout --- */
 .admin-shell { display: flex; gap: 28px; margin-top: 20px; align-items: flex-start; }
 .admin-sidebar {
   width: 220px; flex-shrink: 0; background: var(--hl-black); border: 1px solid var(--hl-black);
@@ -322,13 +308,11 @@ tbody tr:hover { background: var(--hl-off-white); }
   .admin-sidebar a { white-space: nowrap; }
 }
 
-/* --- Hero --- */
 .hero { padding: 40px 0 8px; text-align: center; }
 .hero h1 { font-size: 2.3rem; margin: 0 0 10px; color: var(--hl-ink); }
 .hero h1 .accent { color: var(--hl-amber-dark); }
 .hero p { color: var(--hl-gray); font-size: 1.05rem; margin: 0; }
 
-/* --- Category boxes (used instead of a dropdown to filter products) --- */
 .category-boxes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -348,7 +332,6 @@ tbody tr:hover { background: var(--hl-off-white); }
 }
 .category-box.active svg { color: var(--hl-amber); }
 
-/* --- Empty states --- */
 .empty-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 12px; padding: 60px 20px; color: var(--hl-gray); text-align: center;
@@ -356,7 +339,6 @@ tbody tr:hover { background: var(--hl-off-white); }
 .empty-state svg { color: var(--hl-gray-dim); }
 .empty-state p { margin: 0; font-size: 1.05rem; }
 
-/* --- Footer: black to bookend the navbar --- */
 .site-footer {
   margin-top: 60px; border-top: 3px solid var(--hl-amber);
   background: var(--hl-black); padding-top: 36px; color: #d0d0d5;
@@ -372,23 +354,13 @@ tbody tr:hover { background: var(--hl-off-white); }
   .footer-grid { grid-template-columns: 1fr; }
 }
 
-/* --- Horizontally-scrollable table wrapper (used in admin pages, cart,
-   and order history) so wide tables never break the page layout on small
-   screens - they scroll within their own box instead of overflowing. --- */
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .table-scroll table { min-width: 560px; }
 
-/* --- Product detail page image (replaces old fixed inline width/height
-   so it can shrink properly on small screens) --- */
 .product-detail-img {
   width: 320px; height: 260px; object-fit: cover; border-radius: 8px; flex-shrink: 0;
 }
 
-/* =====================================================================
-   RESPONSIVE BREAKPOINTS
-   ===================================================================== */
-
-/* Tablet and below */
 @media (max-width: 900px) {
   .container { padding: 0 16px 50px; }
   .hero { padding: 28px 0 4px; }
@@ -398,17 +370,15 @@ tbody tr:hover { background: var(--hl-off-white); }
   .footer-grid { gap: 24px; }
 }
 
-/* Phones - the hamburger takes over completely here: the full nav row is
-   hidden (this ".navbar .nav-desktop" rule has higher specificity than
-   the base ".navbar nav.nav-desktop" rule above, so it correctly wins),
-   so on a small screen there is NO duplication - only the logo, cart
-   icon, and hamburger button show, and every link lives inside the
-   slide-down .mobile-menu panel instead. */
+/* PHONES: this block is the important one for the hamburger menu.
+   !important is used on the two display rules so they win no matter
+   what else may be defined elsewhere in this file. */
 @media (max-width: 600px) {
   .container { padding: 0 14px 40px; }
 
-  .navbar .nav-desktop { display: none; }
-  .nav-mobile-trigger { display: flex; }
+  .navbar .nav-desktop { display: none !important; }
+  .nav-mobile-trigger { display: flex !important; }
+
   .navbar { padding: 12px 16px; gap: 8px; }
   .navbar .brand { font-size: 1.1rem; }
   .admin-pill { font-size: 0.7rem; padding: 3px 10px; }
@@ -422,8 +392,6 @@ tbody tr:hover { background: var(--hl-off-white); }
   .slideshow .caption h2 { font-size: 1.1rem; }
   .slideshow .caption p { font-size: 0.82rem; }
 
-  /* Search bar: stack fields full-width instead of squeezing them into
-     a cramped single row. */
   .searchbar { flex-direction: column; align-items: stretch; padding: 14px; }
   .searchbar .field { min-width: 0; width: 100%; }
   .searchbar .btn { width: 100%; }
@@ -432,7 +400,6 @@ tbody tr:hover { background: var(--hl-off-white); }
   .category-box { padding: 14px 8px; font-size: 0.8rem; }
   .category-box svg { width: 20px; height: 20px; }
 
-  /* Smaller, denser product cards so more fit per row on a phone screen */
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
   .product-card { padding: 10px; }
   .product-image-wrap img { height: 100px; }
@@ -453,8 +420,6 @@ tbody tr:hover { background: var(--hl-off-white); }
   h2 { font-size: 1.25rem; }
   h3 { font-size: 1.05rem; }
 
-  /* Product detail page: image goes full-width above the details instead
-     of sitting rigidly beside them. */
   .product-detail-img { width: 100%; height: 200px; }
 
   .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -469,7 +434,6 @@ tbody tr:hover { background: var(--hl-off-white); }
   .checkout-card, .checkout-success, .form-card { margin: 20px auto; }
 }
 
-/* Very small phones */
 @media (max-width: 380px) {
   .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .product-image-wrap img { height: 90px; }

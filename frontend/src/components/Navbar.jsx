@@ -31,7 +31,6 @@ export default function Navbar() {
         Hawk Life Solutions
       </Link>
 
-      {/* Full nav - visible on desktop/tablet, hidden on phones (see .nav-desktop in theme.css) */}
       <nav className="nav-desktop">
         <Link to="/cart" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <ShoppingCart size={17} /> Cart {count > 0 && <span className="admin-pill">{count}</span>}
@@ -41,16 +40,12 @@ export default function Navbar() {
           <>
             {linkRow(<User size={17} />, "Profile", "/profile")}
             {linkRow(<Settings size={17} />, "Settings", "/settings")}
-
-            {/* Only ever renders when the backend confirms this account's
-                role is ADMIN - normal customers never see this link. */}
             {user.is_admin && (
               <>
                 <span className="admin-pill">Admin: {user.first_name || user.username}</span>
                 {linkRow(<LayoutDashboard size={17} />, "Dashboard", "/admin")}
               </>
             )}
-
             <button className="linklike" onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <LogOut size={17} /> Logout
             </button>
@@ -63,7 +58,6 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Phone-only: cart icon + hamburger trigger (see .nav-mobile-trigger in theme.css) */}
       <div className="nav-mobile-trigger">
         <Link to="/cart" onClick={closeMenu} className="mobile-cart-icon">
           <ShoppingCart size={20} />
@@ -78,7 +72,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Phone-only: dropdown panel with the same links, stacked */}
       {menuOpen && (
         <div className="mobile-menu">
           {user ? (
