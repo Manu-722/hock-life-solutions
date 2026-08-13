@@ -22,14 +22,16 @@ let app = null;
 let auth = null;
 const googleProvider = new GoogleAuthProvider();
 
+// Forces Google to always show the "Choose an account" picker listing
+// every Google account currently signed in on this browser/device, rather
+// than silently reusing whichever account was used last time, or jumping
+// straight to a plain email entry box. This lets the person pick exactly
+// which of their accounts they want to sign in with, every time.
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
 if (isFirebaseConfigured) {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   auth = getAuth(app);
 }
 
 export { auth, googleProvider };
-
-
-
-
-
