@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -110,7 +111,17 @@ TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_TZ = True
 
+# ---------------------------------------------------------------------------
+# STATIC & MEDIA FILES
+# ---------------------------------------------------------------------------
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -119,7 +130,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # once the frontend (e.g. on Vercel) and backend (e.g. on Render) live on
 # completely different domains - a relative "/media/..." path would try to
 # load from the frontend's own domain and 404. Set this to your real
-# Render URL (e.g. https://hawklife-api.onrender.com) once deployed.
+# Render URL (e.g. https://hawklife-backend.onrender.com) once deployed.
 BACKEND_PUBLIC_URL = os.environ.get("BACKEND_PUBLIC_URL", "http://localhost:8000")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -175,14 +186,16 @@ PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 
 # ---------------------------------------------------------------------------
 # FIREBASE (Google Sign-In)
-# Download a service account key from Firebase Console -> Project Settings
-# -> Service Accounts -> Generate new private key. Save the JSON file
-# somewhere OUTSIDE version control and point this at it.
+# Locally: download a service account key from Firebase Console -> Project
+# Settings -> Service Accounts -> Generate new private key, save the JSON
+# file OUTSIDE version control, and point this at its full path.
+# On Render: use a Secret File instead (Environment tab -> Secret Files),
+# and set this to that file's path, e.g. /etc/secrets/firebase-service-account.json
 # ---------------------------------------------------------------------------
 FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "")
 
 # ---------------------------------------------------------------------------
-# HOCK LIFE SOLUTIONS - BUSINESS SETTINGS
+# HAWK LIFE SOLUTIONS - BUSINESS SETTINGS
 # ---------------------------------------------------------------------------
 COMPANY_NAME = "Hawk Life Solutions"
 # Real M-Pesa Paybill payment details shown to customers at checkout.
