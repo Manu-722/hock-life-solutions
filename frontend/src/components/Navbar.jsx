@@ -89,16 +89,10 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <>
-            <Link to="/login" onClick={closeMenu} className="btn secondary" style={{ width: "100%", textAlign: "center", color: "var(--hl-white)", borderColor: "var(--hl-white)" }}>
-  Login
-</Link>
-<Link to="/register" onClick={closeMenu} className="btn" style={{ width: "100%", textAlign: "center" }}>
-  Sign up
-</Link>
-             
-
-            </>
+            <div className="mobile-auth-buttons">
+              <Link to="/login" onClick={closeMenu} className="mobile-login-btn">Login</Link>
+              <Link to="/register" onClick={closeMenu} className="mobile-signup-btn">Sign up</Link>
+            </div>
           )}
         </div>
       )}

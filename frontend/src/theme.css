@@ -450,3 +450,37 @@ tbody tr:hover { background: var(--hl-off-white); }
   display: flex; padding: 4px;
 }
 .password-toggle:hover { color: var(--hl-ink); }
+
+
+/* Mobile menu Login/Sign up buttons - dedicated classes so there's no
+   fight with .btn/.btn.secondary's own background rules elsewhere. */
+.mobile-auth-buttons { display: flex; flex-direction: column; gap: 10px; }
+
+.mobile-login-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: transparent !important;
+  color: var(--hl-white) !important;
+  border: 1.5px solid var(--hl-white);
+  box-sizing: border-box;
+}
+.mobile-login-btn:hover { background: rgba(255,255,255,0.08) !important; color: var(--hl-white) !important; }
+
+.mobile-signup-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--hl-amber) !important;
+  color: var(--hl-black) !important;
+  border: none;
+}
+.mobile-signup-btn:hover { background: var(--hl-amber-dark) !important; }
