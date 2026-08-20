@@ -90,10 +90,12 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login" onClick={closeMenu}>Login</Link>
-              <Link to="/register" onClick={closeMenu} className="btn" style={{ padding: "10px 16px", textAlign: "center" }}>
-                Sign up
-              </Link>
+              <Link to="/login" onClick={closeMenu} className="btn secondary" style={{ width: "100%", textAlign: "center", color: "var(--hl-white)", borderColor: "var(--hl-white)" }}>
+  Login
+</Link>
+<Link to="/register" onClick={closeMenu} className="btn" style={{ width: "100%", textAlign: "center" }}>
+  Sign up
+</Link>
             </>
           )}
         </div>

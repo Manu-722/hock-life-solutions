@@ -440,3 +440,13 @@ tbody tr:hover { background: var(--hl-off-white); }
   .category-boxes { grid-template-columns: repeat(2, 1fr); }
   .navbar .brand { font-size: 1rem; }
 }
+
+
+.password-field { position: relative; }
+.password-field input { padding-right: 44px; }
+.password-toggle {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--hl-gray); cursor: pointer;
+  display: flex; padding: 4px;
+}
+.password-toggle:hover { color: var(--hl-ink); }

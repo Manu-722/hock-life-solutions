@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import ProductDetail from "./pages/ProductDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   const location = useLocation();
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
+            <Route path="*" element={<NotFound />} />
 
             {/* Only reachable by an authenticated admin - see RequireAdmin */}
             <Route path="/admin/*" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
