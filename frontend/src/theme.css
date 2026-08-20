@@ -119,6 +119,39 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 }
 .mobile-menu a:hover, .mobile-menu button.linklike:hover { color: var(--hl-amber); }
 
+/* Mobile menu Login/Sign up buttons - dedicated classes so there's no
+   fight with .btn/.btn.secondary's own background rules elsewhere. */
+.mobile-auth-buttons { display: flex; flex-direction: column; gap: 10px; }
+
+.mobile-login-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: transparent !important;
+  color: var(--hl-white) !important;
+  border: 1.5px solid var(--hl-white);
+  box-sizing: border-box;
+}
+.mobile-login-btn:hover { background: rgba(255,255,255,0.08) !important; color: var(--hl-white) !important; }
+
+.mobile-signup-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--hl-amber) !important;
+  color: var(--hl-black) !important;
+  border: none;
+}
+.mobile-signup-btn:hover { background: var(--hl-amber-dark) !important; }
+
 .btn {
   background: var(--hl-black);
   color: var(--hl-white);
@@ -150,6 +183,15 @@ a:hover { color: var(--hl-amber); text-decoration: none; }
 
 .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--hl-gray-dim); font-size: 0.85rem; }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--hl-border); }
+
+.password-field { position: relative; }
+.password-field input { padding-right: 44px; }
+.password-toggle {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--hl-gray); cursor: pointer;
+  display: flex; padding: 4px;
+}
+.password-toggle:hover { color: var(--hl-ink); }
 
 .card {
   background: var(--hl-white);
@@ -370,9 +412,6 @@ tbody tr:hover { background: var(--hl-off-white); }
   .footer-grid { gap: 24px; }
 }
 
-/* PHONES: this block is the important one for the hamburger menu.
-   !important is used on the two display rules so they win no matter
-   what else may be defined elsewhere in this file. */
 @media (max-width: 600px) {
   .container { padding: 0 14px 40px; }
 
@@ -440,47 +479,3 @@ tbody tr:hover { background: var(--hl-off-white); }
   .category-boxes { grid-template-columns: repeat(2, 1fr); }
   .navbar .brand { font-size: 1rem; }
 }
-
-
-.password-field { position: relative; }
-.password-field input { padding-right: 44px; }
-.password-toggle {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; color: var(--hl-gray); cursor: pointer;
-  display: flex; padding: 4px;
-}
-.password-toggle:hover { color: var(--hl-ink); }
-
-
-/* Mobile menu Login/Sign up buttons - dedicated classes so there's no
-   fight with .btn/.btn.secondary's own background rules elsewhere. */
-.mobile-auth-buttons { display: flex; flex-direction: column; gap: 10px; }
-
-.mobile-login-btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 11px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-size: 0.95rem;
-  background: transparent !important;
-  color: var(--hl-white) !important;
-  border: 1.5px solid var(--hl-white);
-  box-sizing: border-box;
-}
-.mobile-login-btn:hover { background: rgba(255,255,255,0.08) !important; color: var(--hl-white) !important; }
-
-.mobile-signup-btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 11px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-size: 0.95rem;
-  background: var(--hl-amber) !important;
-  color: var(--hl-black) !important;
-  border: none;
-}
-.mobile-signup-btn:hover { background: var(--hl-amber-dark) !important; }
