@@ -13,9 +13,6 @@ load_dotenv(BASE_DIR / ".env")
 # ---------------------------------------------------------------------------
 # CORE / SECURITY
 # ---------------------------------------------------------------------------
-# In production, ALWAYS set this via an environment variable in your .env
-# file and never commit a real value. The fallback below is only for local
-# development and is intentionally not secret.
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-dev-key-do-not-use-in-production")
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
@@ -47,6 +44,13 @@ INSTALLED_APPS = [
     "offers",
     "orders",
 ]
+
+# Cloudinary storage for product/slideshow images - avoids Render's free
+# tier wiping uploaded files on every redeploy/restart. Only added when
+# actually configured, so local dev keeps using plain local file storage.
+USE_CLOUDINARY_STORAGE = os.environ.get("USE_CLOUDINARY_STORAGE", "False") == "True"
+if USE_CLOUDINARY_STORAGE:
+    INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -84,7 +88,9 @@ WSGI_APPLICATION = "hocklife.wsgi.application"
 # DATABASE
 # ---------------------------------------------------------------------------
 # Defaults to SQLite for easy local development.
-# For production, set these environment variables to point at Postgres.
+# For production, set these environment variables to point at Postgres
+# (e.g. Neon, which offers a permanent free tier - unlike Render's free
+# Postgres, which expires after a period of inactivity/time).
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
@@ -93,11 +99,12 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", ""),
         "PORT": os.environ.get("DB_PORT", ""),
+        "OPTIONS": {"sslmode": os.environ.get("DB_SSLMODE", "prefer")},
     }
 }
 
 # ---------------------------------------------------------------------------
-# PASSWORD VALIDATION (keeps the site "hard to hack")
+# PASSWORD VALIDATION
 # ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -116,21 +123,28 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+if USE_CLOUDINARY_STORAGE:
+    # Product/slideshow images go to Cloudinary instead of local disk -
+    # this is what makes uploaded images survive redeploys on Render.
+    STORAGES["default"] = {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    }
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+        "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+    }
 
-# The backend's own public URL - used to build absolute image URLs that
-# work reliably regardless of how a request came in. This matters a lot
-# once the frontend (e.g. on Vercel) and backend (e.g. on Render) live on
-# completely different domains - a relative "/media/..." path would try to
-# load from the frontend's own domain and 404. Set this to your real
-# Render URL (e.g. https://hawklife-backend.onrender.com) once deployed.
 BACKEND_PUBLIC_URL = os.environ.get("BACKEND_PUBLIC_URL", "http://localhost:8000")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -160,7 +174,7 @@ SIMPLE_JWT = {
 }
 
 # ---------------------------------------------------------------------------
-# CORS - allow the React frontend to talk to this API
+# CORS
 # ---------------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
@@ -168,9 +182,7 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 CORS_ALLOW_CREDENTIALS = True
 
 # ---------------------------------------------------------------------------
-# EMAIL (used for the "forgot password" 5-minute OTP code)
-# In development this prints emails to the console. In production, set these
-# env vars to a real SMTP provider (e.g. Gmail app password, SendGrid, etc.)
+# EMAIL
 # ---------------------------------------------------------------------------
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
@@ -186,11 +198,6 @@ PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 
 # ---------------------------------------------------------------------------
 # FIREBASE (Google Sign-In)
-# Locally: download a service account key from Firebase Console -> Project
-# Settings -> Service Accounts -> Generate new private key, save the JSON
-# file OUTSIDE version control, and point this at its full path.
-# On Render: use a Secret File instead (Environment tab -> Secret Files),
-# and set this to that file's path, e.g. /etc/secrets/firebase-service-account.json
 # ---------------------------------------------------------------------------
 FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "")
 
@@ -198,11 +205,6 @@ FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", 
 # HAWK LIFE SOLUTIONS - BUSINESS SETTINGS
 # ---------------------------------------------------------------------------
 COMPANY_NAME = "Hawk Life Solutions"
-# Real M-Pesa Paybill payment details shown to customers at checkout.
 COMPANY_PAYBILL_NUMBER = os.environ.get("COMPANY_PAYBILL_NUMBER", "522522")
 COMPANY_ACCOUNT_NUMBER = os.environ.get("COMPANY_ACCOUNT_NUMBER", "7518213")
-
-# One-time password used by `python manage.py create_admin` to create the
-# first admin account. The admin is forced to change it on first login.
-# Set this in your .env file - never hardcode a real value here.
 ADMIN_STARTER_PASSWORD = os.environ.get("ADMIN_STARTER_PASSWORD", "")
