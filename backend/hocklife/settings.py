@@ -88,9 +88,9 @@ WSGI_APPLICATION = "hocklife.wsgi.application"
 # DATABASE
 # ---------------------------------------------------------------------------
 # Defaults to SQLite for easy local development.
-# For production, set these environment variables to point at Postgres
-# (e.g. Neon, which offers a permanent free tier - unlike Render's free
-# Postgres, which expires after a period of inactivity/time).
+# For production, these point at Neon (permanent free Postgres hosting -
+# unlike Render's free Postgres, which expires after a period of time).
+# Neon requires SSL and, for pooled connections, channel binding too.
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
@@ -99,7 +99,10 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", ""),
         "PORT": os.environ.get("DB_PORT", ""),
-        "OPTIONS": {"sslmode": os.environ.get("DB_SSLMODE", "prefer")},
+        "OPTIONS": {
+            "sslmode": os.environ.get("DB_SSLMODE", "prefer"),
+            "channel_binding": os.environ.get("DB_CHANNEL_BINDING", "prefer"),
+        },
     }
 }
 
