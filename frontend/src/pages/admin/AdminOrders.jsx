@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { toast } from "react-toastify";
 import client from "../../api/client";
+import { confirmToast } from "../../utils/confirmToast";
 
 const statusClass = { PENDING: "status-pending", APPROVED: "status-approved", REJECTED: "status-rejected" };
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loadError, setLoadError] = useState("");
-  const [actionError, setActionError] = useState("");
 
   const load = () => {
     setLoadError("");
@@ -24,21 +25,32 @@ export default function AdminOrders() {
   };
   useEffect(load, []);
 
-  const approve = async (id) => {
+  const doApprove = async (o) => {
     try {
-      await client.post(`/orders/${id}/approve/`);
+      await client.post(`/orders/${o.id}/approve/`);
+      toast.success(`Order #${o.id} approved. The customer will now see it as Approved.`);
       load();
     } catch {
-      setActionError("Could not approve that order.");
+      toast.error(`Could not approve order #${o.id}.`);
     }
   };
-  const reject = async (id) => {
+
+  const doReject = async (o) => {
     try {
-      await client.post(`/orders/${id}/reject/`);
+      await client.post(`/orders/${o.id}/reject/`);
+      toast.success(`Order #${o.id} rejected.`);
       load();
     } catch {
-      setActionError("Could not reject that order.");
+      toast.error(`Could not reject order #${o.id}.`);
     }
+  };
+
+  const approve = (o) => {
+    confirmToast(`Approve order #${o.id} for ${o.customer_username}? Only do this after confirming payment.`, () => doApprove(o));
+  };
+
+  const reject = (o) => {
+    confirmToast(`Reject order #${o.id} for ${o.customer_username}? This can't be undone.`, () => doReject(o));
   };
 
   if (loadError) {
@@ -57,7 +69,6 @@ export default function AdminOrders() {
         Approve an order once you've confirmed the customer paid via the Hawk Life Solutions Paybill number.
         The customer sees the status update immediately in their Profile order history.
       </p>
-      {actionError && <p className="status-rejected">{actionError}</p>}
 
       {orders.length === 0 ? (
         <p style={{ color: "var(--hl-gray)" }}>No orders yet - they'll appear here as soon as a customer checks out.</p>
@@ -79,8 +90,8 @@ export default function AdminOrders() {
                   <td style={{ display: "flex", gap: 8 }}>
                     {o.status === "PENDING" && (
                       <>
-                        <button className="btn" onClick={() => approve(o.id)}><CheckCircle2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Approve</button>
-                        <button className="btn danger" onClick={() => reject(o.id)}><XCircle size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Reject</button>
+                        <button className="btn" onClick={() => approve(o)}><CheckCircle2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Approve</button>
+                        <button className="btn danger" onClick={() => reject(o)}><XCircle size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Reject</button>
                       </>
                     )}
                   </td>

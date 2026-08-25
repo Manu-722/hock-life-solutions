@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import client from "../../api/client";
+import { confirmToast } from "../../utils/confirmToast";
 
 const emptyForm = {
   id: null,
@@ -11,13 +13,11 @@ const emptyForm = {
   in_stock: true,
   is_on_offer: false,
   offer_price: "",
-  // Induction cooker fields
   watts: "",
   power_output_levels: "",
   channel_lock_system: "",
   voltage: "",
   warranty_months: 12,
-  // Sufuria fields
   size: "",
   material: "",
   induction_compatible: false,
@@ -29,9 +29,8 @@ export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
-  const [message, setMessage] = useState("");
-
   const [loadError, setLoadError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const loadAll = () => {
     setLoadError("");
@@ -80,6 +79,7 @@ export default function AdminProducts() {
       induction_compatible: p.sufuria_spec?.induction_compatible || false,
       has_lid: p.sufuria_spec?.has_lid ?? true,
     });
+    toast.info(`Editing "${p.name}"`, { autoClose: 1800 });
   };
 
   const buildPayload = () => {
@@ -114,7 +114,8 @@ export default function AdminProducts() {
 
   const submit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setSaving(true);
+    const wasEditing = Boolean(form.id);
     try {
       const payload = buildPayload();
       let productId = form.id;
@@ -132,28 +133,52 @@ export default function AdminProducts() {
         await client.patch(`/products/${productId}/`, fd, { headers: { "Content-Type": "multipart/form-data" } });
       }
 
-      setMessage(form.id ? "Product updated." : "Product added.");
+      toast.success(wasEditing ? `"${form.name}" updated successfully.` : `"${form.name}" added to the store.`);
       resetForm();
       loadAll();
     } catch (err) {
-      setMessage("Error saving product: " + JSON.stringify(err.response?.data || {}));
+      const detail = err.response?.data;
+      const message = detail && typeof detail === "object"
+        ? Object.entries(detail).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(", ") : errs}`).join(" | ")
+        : "Something went wrong while saving.";
+      toast.error(message, { autoClose: 6000 });
+    } finally {
+      setSaving(false);
     }
   };
 
-  const deleteProduct = async (id) => {
-    if (!window.confirm("Remove this product from the site?")) return;
-    await client.delete(`/products/${id}/`);
-    loadAll();
+  const doDelete = async (p) => {
+    try {
+      await client.delete(`/products/${p.id}/`);
+      toast.success(`"${p.name}" was deleted.`);
+      loadAll();
+    } catch {
+      toast.error(`Could not delete "${p.name}".`);
+    }
+  };
+
+  const deleteProduct = (p) => {
+    confirmToast(`Remove "${p.name}" from the site? This can't be undone.`, () => doDelete(p));
   };
 
   const toggleStock = async (p) => {
-    await client.patch(`/products/${p.id}/`, { in_stock: !p.in_stock });
-    loadAll();
+    try {
+      await client.patch(`/products/${p.id}/`, { in_stock: !p.in_stock });
+      toast.success(`"${p.name}" marked as ${!p.in_stock ? "in stock" : "out of stock"}.`);
+      loadAll();
+    } catch {
+      toast.error(`Could not update stock status for "${p.name}".`);
+    }
   };
 
   const toggleOffer = async (p) => {
-    await client.patch(`/products/${p.id}/`, { is_on_offer: !p.is_on_offer });
-    loadAll();
+    try {
+      await client.patch(`/products/${p.id}/`, { is_on_offer: !p.is_on_offer });
+      toast.success(`"${p.name}" is ${!p.is_on_offer ? "now on offer" : "no longer on offer"}.`);
+      loadAll();
+    } catch {
+      toast.error(`Could not update offer status for "${p.name}".`);
+    }
   };
 
   return (
@@ -166,7 +191,6 @@ export default function AdminProducts() {
       )}
       <div className="card" style={{ maxWidth: 640, marginBottom: 24 }}>
         <h3>{form.id ? `Edit product #${form.id}` : "Add a new product"}</h3>
-        {message && <p className="status-approved">{message}</p>}
         <form onSubmit={submit}>
           <div className="field">
             <label>Category</label>
@@ -218,7 +242,9 @@ export default function AdminProducts() {
           )}
 
           <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-            <button className="btn" type="submit">{form.id ? "Save changes" : "Add product"}</button>
+            <button className="btn" type="submit" disabled={saving}>
+              {saving ? "Saving..." : form.id ? "Save changes" : "Add product"}
+            </button>
             {form.id && <button type="button" className="btn secondary" onClick={resetForm}>Cancel edit</button>}
           </div>
         </form>
@@ -248,7 +274,7 @@ export default function AdminProducts() {
                 </td>
                 <td style={{ display: "flex", gap: 8 }}>
                   <button className="btn" onClick={() => editProduct(p)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
-                  <button className="btn danger" onClick={() => deleteProduct(p.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
+                  <button className="btn danger" onClick={() => deleteProduct(p)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
                 </td>
               </tr>
             ))}

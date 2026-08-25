@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import client from "../../api/client";
+import { confirmToast } from "../../utils/confirmToast";
 
 const emptyForm = { id: null, title: "", subtitle: "", link_url: "", order: 0, active: true };
 
@@ -8,8 +10,8 @@ export default function AdminSlideshow() {
   const [slides, setSlides] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
-  const [message, setMessage] = useState("");
   const [loadError, setLoadError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const load = () => {
     setLoadError("");
@@ -31,12 +33,16 @@ export default function AdminSlideshow() {
     setForm({ ...form, [key]: val });
   };
 
-  const editSlide = (s) => setForm({ id: s.id, title: s.title, subtitle: s.subtitle, link_url: s.link_url, order: s.order, active: s.active });
+  const editSlide = (s) => {
+    setForm({ id: s.id, title: s.title, subtitle: s.subtitle, link_url: s.link_url, order: s.order, active: s.active });
+    toast.info(`Editing slide "${s.title}"`, { autoClose: 1800 });
+  };
   const resetForm = () => { setForm(emptyForm); setImageFile(null); };
 
   const submit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setSaving(true);
+    const wasEditing = Boolean(form.id);
     try {
       const fd = new FormData();
       fd.append("title", form.title);
@@ -49,33 +55,48 @@ export default function AdminSlideshow() {
       if (form.id) {
         await client.patch(`/offers/slideshow/${form.id}/`, fd, { headers: { "Content-Type": "multipart/form-data" } });
       } else {
-        if (!imageFile) { setMessage("Please choose an image for the new slide."); return; }
+        if (!imageFile) {
+          toast.error("Please choose an image for the new slide.");
+          setSaving(false);
+          return;
+        }
         await client.post("/offers/slideshow/", fd, { headers: { "Content-Type": "multipart/form-data" } });
       }
-      setMessage("Slide saved.");
+      toast.success(wasEditing ? `Slide "${form.title}" updated.` : `Slide "${form.title}" added.`);
       resetForm();
       load();
     } catch (err) {
-      setMessage("Error saving slide: " + JSON.stringify(err.response?.data || { detail: "Unknown error" }));
+      const detail = err.response?.data;
+      const message = detail && typeof detail === "object"
+        ? Object.entries(detail).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(", ") : errs}`).join(" | ")
+        : "Something went wrong while saving.";
+      toast.error(message, { autoClose: 6000 });
+    } finally {
+      setSaving(false);
     }
   };
 
-  const removeSlide = async (id) => {
-    if (!window.confirm("Remove this slide from the offers slideshow?")) return;
+  const doRemove = async (s) => {
     try {
-      await client.delete(`/offers/slideshow/${id}/`);
+      await client.delete(`/offers/slideshow/${s.id}/`);
+      toast.success(`Slide "${s.title}" was deleted.`);
       load();
     } catch {
-      setMessage("Could not delete that slide.");
+      toast.error(`Could not delete slide "${s.title}".`);
     }
+  };
+
+  const removeSlide = (s) => {
+    confirmToast(`Remove slide "${s.title}" from the homepage? This can't be undone.`, () => doRemove(s));
   };
 
   const toggleActive = async (s) => {
     try {
       await client.patch(`/offers/slideshow/${s.id}/`, { active: !s.active });
+      toast.success(`Slide "${s.title}" is now ${!s.active ? "active" : "hidden"}.`);
       load();
     } catch {
-      setMessage("Could not update that slide.");
+      toast.error(`Could not update slide "${s.title}".`);
     }
   };
 
@@ -92,7 +113,6 @@ export default function AdminSlideshow() {
     <div>
       <div className="card" style={{ maxWidth: 560, marginBottom: 24 }}>
         <h3>{form.id ? `Edit slide #${form.id}` : "Add a new offer slide"}</h3>
-        {message && <p className="status-approved">{message}</p>}
         <form onSubmit={submit}>
           <div className="field"><label>Title</label><input value={form.title} onChange={update("title")} required /></div>
           <div className="field"><label>Subtitle</label><input value={form.subtitle} onChange={update("subtitle")} /></div>
@@ -103,7 +123,9 @@ export default function AdminSlideshow() {
             <input type="checkbox" style={{ width: "auto" }} checked={form.active} onChange={update("active")} /> Active (visible on homepage)
           </label>
           <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn" type="submit">{form.id ? "Save changes" : "Add slide"}</button>
+            <button className="btn" type="submit" disabled={saving}>
+              {saving ? "Saving..." : form.id ? "Save changes" : "Add slide"}
+            </button>
             {form.id && <button type="button" className="btn secondary" onClick={resetForm}>Cancel</button>}
           </div>
         </form>
@@ -124,7 +146,7 @@ export default function AdminSlideshow() {
                   <td><button className="btn secondary" onClick={() => toggleActive(s)}>{s.active ? "Active" : "Hidden"}</button></td>
                   <td style={{ display: "flex", gap: 8 }}>
                     <button className="btn" onClick={() => editSlide(s)}><Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Edit</button>
-                    <button className="btn danger" onClick={() => removeSlide(s.id)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
+                    <button className="btn danger" onClick={() => removeSlide(s)}><Trash2 size={14} style={{ verticalAlign: "-2px", marginRight: 5 }} />Delete</button>
                   </td>
                 </tr>
               ))}
