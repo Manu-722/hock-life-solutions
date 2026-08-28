@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import client from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { confirmToast } from "../utils/confirmToast";
 
 function StarRow({ rating, onChange }) {
   return (
@@ -28,7 +30,6 @@ export default function ProductReviews({ productId }) {
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
 
   const load = () => {
     setLoading(true);
@@ -37,8 +38,6 @@ export default function ProductReviews({ productId }) {
       .then((res) => {
         const data = res.data.results || res.data;
         setReviews(data);
-        // Pre-fill the form with the user's existing review, if any, so
-        // submitting again naturally acts as "editing my review".
         const mine = user && data.find((r) => r.username === user.username);
         if (mine) {
           setMyRating(mine.rating);
@@ -53,20 +52,33 @@ export default function ProductReviews({ productId }) {
   const submitReview = async (e) => {
     e.preventDefault();
     if (myRating < 1) {
-      setMessage("Please select a star rating.");
+      toast.error("Please select a star rating.");
       return;
     }
     setSubmitting(true);
-    setMessage("");
     try {
       await client.post("/products/reviews/", { product: productId, rating: myRating, comment: myComment });
-      setMessage("Thanks for your review!");
+      toast.success("Thanks for your review!");
       load();
     } catch {
-      setMessage("Could not submit your review. Please try again.");
+      toast.error("Could not submit your review. Please try again.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const doDeleteReview = async (r) => {
+    try {
+      await client.delete(`/products/reviews/${r.id}/`);
+      toast.success(`Removed ${r.username}'s review.`);
+      load();
+    } catch {
+      toast.error("Could not delete that review.");
+    }
+  };
+
+  const deleteReview = (r) => {
+    confirmToast(`Remove ${r.username}'s review? This can't be undone.`, () => doDeleteReview(r));
   };
 
   const average = reviews.length
@@ -89,7 +101,6 @@ export default function ProductReviews({ productId }) {
             <label>Your review (optional)</label>
             <textarea rows={3} value={myComment} onChange={(e) => setMyComment(e.target.value)} placeholder="What did you think of this product?" />
           </div>
-          {message && <p className="status-approved">{message}</p>}
           <button className="btn" type="submit" disabled={submitting}>
             {submitting ? "Submitting..." : "Submit review"}
           </button>
@@ -110,7 +121,19 @@ export default function ProductReviews({ productId }) {
             <div key={r.id} style={{ borderTop: "1px solid var(--hl-border)", padding: "14px 0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <strong>{r.username}</strong>
-                <StarRow rating={r.rating} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <StarRow rating={r.rating} />
+                  {user?.is_admin && (
+                    <button
+                      className="linklike"
+                      style={{ color: "var(--hl-danger)", display: "flex", alignItems: "center" }}
+                      onClick={() => deleteReview(r)}
+                      title="Delete this review (admin)"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
               {r.comment && <p style={{ margin: "6px 0 0", color: "var(--hl-gray)" }}>{r.comment}</p>}
             </div>
