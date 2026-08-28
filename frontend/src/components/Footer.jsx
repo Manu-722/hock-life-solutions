@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Zap, MapPin, Phone, Mail } from "lucide-react";
+import { Zap, MapPin, Phone, Mail, Instagram, Facebook, Youtube } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -11,21 +11,34 @@ export default function Footer() {
             Hawk Life Solutions
           </div>
           <p style={{ color: "var(--hl-gray)", maxWidth: 320, marginTop: 10 }}>
-            Quality induction cookers and kitchenware — built for everyday Kenyan homes.
+            induction cookers, cookware, and household appliances built for everyday Kenyan homes.
+          </p>
+          <div style={{ display: "flex", gap: 14, marginTop: 14 }}>
+            {/* Replace these href values with your real social media page links */}
+            <a href="https://www.instagram.com/hawkinduction.254?igsi=MWRpejU0c2ZoaXN0OA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: "var(--hl-gray)" }}>
+              <Instagram size={22} />
+            </a>
+            <a href="https://www.facebook.com/share/1F44hup4Rz/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: "var(--hl-gray)" }}>
+              <Facebook size={22} />
+            </a>
+            <a href="https://www.youtube.com/@Hawkinduction.254" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: "var(--hl-gray)" }}>
+              <Youtube size={22} />
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>About</h4>
+          <p style={{ color: "var(--hl-gray)", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
+            Hawk Life Solutions is a Kenyan retailer of induction cookers, cookware, and household appliances.
+            We're committed to honest prices and quality you can trust.
           </p>
         </div>
 
         <div>
-          <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>Shop</h4>
-          <Link to="/" style={{ display: "block", marginBottom: 8, color: "var(--hl-gray)" }}>All products</Link>
-          <Link to="/cart" style={{ display: "block", marginBottom: 8, color: "var(--hl-gray)" }}>Your cart</Link>
-          <Link to="/profile" style={{ display: "block", color: "var(--hl-gray)" }}>Order history</Link>
-        </div>
-
-        <div>
-          <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>Contact & payment</h4>
+          <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>Contact</h4>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Phone size={15} /> +254 112660355
+            <Phone size={15} /> Available at checkout
           </p>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <Mail size={15} /> lifesolutions.hawk@gmail.com
