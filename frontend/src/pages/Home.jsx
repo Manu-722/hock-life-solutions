@@ -71,13 +71,13 @@ export default function Home() {
     <div>
       <div className="hero">
         <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Reliable cells, induction cookers, and kitchenware — trusted quality, honest prices.</p>
+        <p>Reliable induction cookers, and kitchenware trusted quality, honest prices.</p>
       </div>
 
       {slides.length > 0 ? (
         <Slideshow slides={slides} />
       ) : (
-        <div className="slideshow-empty">No current offers — check back soon!</div>
+        <div className="slideshow-empty">No current offers  check back soon!</div>
       )}
 
       {categories.length > 0 && (

@@ -38,7 +38,7 @@ export default function Footer() {
         <div>
           <h4 style={{ color: "var(--hl-amber)", marginBottom: 12, fontSize: "0.95rem" }}>Contact</h4>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Phone size={15} /> Available at checkout
+            <Phone size={15} /> 0112660355
           </p>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <Mail size={15} /> lifesolutions.hawk@gmail.com
