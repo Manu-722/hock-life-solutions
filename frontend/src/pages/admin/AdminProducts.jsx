@@ -13,16 +13,31 @@ const emptyForm = {
   in_stock: true,
   is_on_offer: false,
   offer_price: "",
+  // Induction cooker fields
   watts: "",
   power_output_levels: "",
   channel_lock_system: "",
   voltage: "",
   warranty_months: 12,
+  // Cookware fields
   size: "",
   material: "",
   induction_compatible: false,
   has_lid: true,
+  // Household item fields
+  item_type: "Microwave",
+  hh_watts: "",
+  hh_voltage: "",
+  hh_capacity_litres: "",
+  hh_warranty_months: "",
+  hh_color: "",
+  hh_size: "",
+  hh_pieces: "",
+  hh_material: "",
+  hh_notes: "",
 };
+
+const HOUSEHOLD_TYPES = ["Microwave", "Fridge", "Cutlery", "Other appliance"];
 
 export default function AdminProducts() {
   const [categories, setCategories] = useState([]);
@@ -47,7 +62,8 @@ export default function AdminProducts() {
   const selectedCategory = categories.find((c) => String(c.id) === String(form.category));
   const categorySlug = selectedCategory?.slug || "";
   const isInduction = categorySlug.includes("induction");
-  const isSufuria = categorySlug.includes("sufuria") || categorySlug.includes("kitchen") || categorySlug.includes("pan");
+  const isCookware = categorySlug.includes("cookware") || categorySlug.includes("sufuria") || categorySlug.includes("kitchen") || categorySlug.includes("pan");
+  const isHousehold = categorySlug.includes("household");
 
   const update = (key) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -60,6 +76,7 @@ export default function AdminProducts() {
   };
 
   const editProduct = (p) => {
+    const extra = p.extra_specs || {};
     setForm({
       id: p.id,
       category: p.category,
@@ -78,6 +95,16 @@ export default function AdminProducts() {
       material: p.sufuria_spec?.material || "",
       induction_compatible: p.sufuria_spec?.induction_compatible || false,
       has_lid: p.sufuria_spec?.has_lid ?? true,
+      item_type: extra.item_type || "Microwave",
+      hh_watts: extra.watts || "",
+      hh_voltage: extra.voltage || "",
+      hh_capacity_litres: extra.capacity_litres || "",
+      hh_warranty_months: extra.warranty_months || "",
+      hh_color: extra.color || "",
+      hh_size: extra.size || "",
+      hh_pieces: extra.pieces || "",
+      hh_material: extra.material || "",
+      hh_notes: extra.notes || "",
     });
     toast.info(`Editing "${p.name}"`, { autoClose: 1800 });
   };
@@ -101,13 +128,38 @@ export default function AdminProducts() {
         warranty_months: form.warranty_months || 12,
       };
     }
-    if (isSufuria) {
+    if (isCookware) {
       payload.sufuria_spec = {
         size: form.size,
         material: form.material,
         induction_compatible: form.induction_compatible,
         has_lid: form.has_lid,
       };
+    }
+    if (isHousehold) {
+      if (form.item_type === "Cutlery") {
+        payload.extra_specs = {
+          item_type: form.item_type,
+          color: form.hh_color,
+          size: form.hh_size,
+          pieces: form.hh_pieces,
+          material: form.hh_material,
+        };
+      } else if (form.item_type === "Other appliance") {
+        payload.extra_specs = {
+          item_type: form.item_type,
+          notes: form.hh_notes,
+        };
+      } else {
+        // Microwave or Fridge
+        payload.extra_specs = {
+          item_type: form.item_type,
+          watts: form.hh_watts,
+          voltage: form.hh_voltage,
+          capacity_litres: form.hh_capacity_litres,
+          warranty_months: form.hh_warranty_months,
+        };
+      }
     }
     return payload;
   };
@@ -227,9 +279,9 @@ export default function AdminProducts() {
             </>
           )}
 
-          {isSufuria && (
+          {isCookware && (
             <>
-              <h4 style={{ color: "var(--hl-amber)" }}>Sufuria / Pan details</h4>
+              <h4 style={{ color: "var(--hl-amber)" }}>Cookware details</h4>
               <div className="field"><label>Size</label><input value={form.size} onChange={update("size")} placeholder="e.g. 28cm / 5 Litres" required /></div>
               <div className="field"><label>Material</label><input value={form.material} onChange={update("material")} placeholder="e.g. Aluminium" required /></div>
               <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
@@ -238,6 +290,43 @@ export default function AdminProducts() {
               <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <input type="checkbox" style={{ width: "auto" }} checked={form.has_lid} onChange={update("has_lid")} /> Has lid
               </label>
+            </>
+          )}
+
+          {isHousehold && (
+            <>
+              <h4 style={{ color: "var(--hl-amber)" }}>Household Item details</h4>
+              <div className="field">
+                <label>Item type</label>
+                <select value={form.item_type} onChange={update("item_type")}>
+                  {HOUSEHOLD_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              {(form.item_type === "Microwave" || form.item_type === "Fridge") && (
+                <>
+                  <div className="field"><label>Watts</label><input type="number" value={form.hh_watts} onChange={update("hh_watts")} /></div>
+                  <div className="field"><label>Voltage</label><input value={form.hh_voltage} onChange={update("hh_voltage")} placeholder="e.g. 220-240V" /></div>
+                  <div className="field"><label>Capacity (Litres)</label><input type="number" value={form.hh_capacity_litres} onChange={update("hh_capacity_litres")} /></div>
+                  <div className="field"><label>Warranty (months)</label><input type="number" value={form.hh_warranty_months} onChange={update("hh_warranty_months")} /></div>
+                </>
+              )}
+
+              {form.item_type === "Cutlery" && (
+                <>
+                  <div className="field"><label>Color</label><input value={form.hh_color} onChange={update("hh_color")} placeholder="e.g. Silver" /></div>
+                  <div className="field"><label>Size</label><input value={form.hh_size} onChange={update("hh_size")} placeholder="e.g. Medium" /></div>
+                  <div className="field"><label>Pieces in set</label><input type="number" value={form.hh_pieces} onChange={update("hh_pieces")} placeholder="e.g. 24" /></div>
+                  <div className="field"><label>Material</label><input value={form.hh_material} onChange={update("hh_material")} placeholder="e.g. Stainless Steel" /></div>
+                </>
+              )}
+
+              {form.item_type === "Other appliance" && (
+                <div className="field">
+                  <label>Additional details</label>
+                  <textarea rows={3} value={form.hh_notes} onChange={update("hh_notes")} placeholder="Any specs worth mentioning" />
+                </div>
+              )}
             </>
           )}
 

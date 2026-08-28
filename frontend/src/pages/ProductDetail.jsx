@@ -5,6 +5,19 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import ProductReviews from "../components/ProductReviews";
 
+const HOUSEHOLD_LABELS = {
+  watts: "Power",
+  voltage: "Voltage",
+  capacity_litres: "Capacity",
+  warranty_months: "Warranty",
+  color: "Color",
+  size: "Size",
+  pieces: "Pieces in set",
+  material: "Material",
+  notes: "Details",
+};
+const HOUSEHOLD_UNITS = { watts: "W", capacity_litres: "L", warranty_months: " months" };
+
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -26,6 +39,8 @@ export default function ProductDetail() {
     }
     addItem(product, qty);
   };
+
+  const household = product.extra_specs && product.extra_specs.item_type ? product.extra_specs : null;
 
   return (
     <div>
@@ -60,6 +75,20 @@ export default function ProductDetail() {
               <li>Material: {product.sufuria_spec.material}</li>
               <li>Induction compatible: {product.sufuria_spec.induction_compatible ? "Yes" : "No"}</li>
               <li>Lid included: {product.sufuria_spec.has_lid ? "Yes" : "No"}</li>
+            </ul>
+          )}
+
+          {household && (
+            <ul>
+              <li>Type: {household.item_type}</li>
+              {Object.entries(household).map(([key, value]) => {
+                if (key === "item_type" || !value) return null;
+                return (
+                  <li key={key}>
+                    {HOUSEHOLD_LABELS[key] || key}: {value}{HOUSEHOLD_UNITS[key] || ""}
+                  </li>
+                );
+              })}
             </ul>
           )}
 
