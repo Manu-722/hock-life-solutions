@@ -3,9 +3,11 @@ from django.utils.text import slugify
 
 from products.models import Category
 
-# The categories Hawk Life Solutions actually sells. Slugs matter: the
-# admin dashboard's product form shows extra spec fields based on whether
-# the category slug contains "induction", "cookware", or "household".
+# Exactly three real categories. "All items" is not a database category -
+# it's just the default/no-filter state on the homepage. Fridges,
+# Microwaves, Cutlery etc. are NOT separate categories - they're all
+# Household Items, distinguished by the "item_type" field within
+# extra_specs (see AdminProducts.jsx).
 CATEGORIES = [
     "Induction Cookers",
     "Cookware",
