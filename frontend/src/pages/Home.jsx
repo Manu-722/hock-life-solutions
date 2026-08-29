@@ -9,8 +9,8 @@ import ProductCard from "../components/ProductCard";
 // categories the admin adds later still get something sensible.
 function iconForCategory(slug) {
   if (slug.includes("induction")) return Flame;
-  if (slug.includes("pan")) return UtensilsCrossed;
-  if (slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
+  if (slug.includes("cookware") || slug.includes("pan") || slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
+  if (slug.includes("household")) return HomeIcon;
   return LayoutGrid;
 }
 
