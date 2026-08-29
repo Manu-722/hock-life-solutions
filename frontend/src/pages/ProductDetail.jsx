@@ -10,6 +10,7 @@ const HOUSEHOLD_LABELS = {
   voltage: "Voltage",
   capacity_litres: "Capacity",
   warranty_months: "Warranty",
+  frost_type: "Frost type",
   color: "Color",
   size: "Size",
   pieces: "Pieces in set",

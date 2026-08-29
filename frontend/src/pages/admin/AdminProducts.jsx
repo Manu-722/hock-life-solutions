@@ -19,7 +19,7 @@ const emptyForm = {
   channel_lock_system: "",
   voltage: "",
   warranty_months: 12,
-  // Cookware fields
+  // Cookware fields (sufuria, non-stick pans, pots, etc.)
   size: "",
   material: "",
   induction_compatible: false,
@@ -30,6 +30,7 @@ const emptyForm = {
   hh_voltage: "",
   hh_capacity_litres: "",
   hh_warranty_months: "",
+  hh_frost_type: "No Frost",
   hh_color: "",
   hh_size: "",
   hh_pieces: "",
@@ -62,7 +63,7 @@ export default function AdminProducts() {
   const selectedCategory = categories.find((c) => String(c.id) === String(form.category));
   const categorySlug = selectedCategory?.slug || "";
   const isInduction = categorySlug.includes("induction");
-  const isCookware = categorySlug.includes("cookware") || categorySlug.includes("sufuria") || categorySlug.includes("kitchen") || categorySlug.includes("pan");
+  const isCookware = categorySlug.includes("cookware") || categorySlug.includes("sufuria") || categorySlug.includes("pan") || categorySlug.includes("kitchen");
   const isHousehold = categorySlug.includes("household");
 
   const update = (key) => (e) => {
@@ -100,6 +101,7 @@ export default function AdminProducts() {
       hh_voltage: extra.voltage || "",
       hh_capacity_litres: extra.capacity_litres || "",
       hh_warranty_months: extra.warranty_months || "",
+      hh_frost_type: extra.frost_type || "No Frost",
       hh_color: extra.color || "",
       hh_size: extra.size || "",
       hh_pieces: extra.pieces || "",
@@ -150,8 +152,17 @@ export default function AdminProducts() {
           item_type: form.item_type,
           notes: form.hh_notes,
         };
+      } else if (form.item_type === "Fridge") {
+        payload.extra_specs = {
+          item_type: form.item_type,
+          watts: form.hh_watts,
+          voltage: form.hh_voltage,
+          capacity_litres: form.hh_capacity_litres,
+          warranty_months: form.hh_warranty_months,
+          frost_type: form.hh_frost_type,
+        };
       } else {
-        // Microwave or Fridge
+        // Microwave
         payload.extra_specs = {
           item_type: form.item_type,
           watts: form.hh_watts,
@@ -282,8 +293,11 @@ export default function AdminProducts() {
           {isCookware && (
             <>
               <h4 style={{ color: "var(--hl-amber)" }}>Cookware details</h4>
+              <p style={{ color: "var(--hl-gray)", fontSize: "0.85rem", marginTop: -8 }}>
+                For sufurias, pots, non-stick pans, and similar cookware.
+              </p>
               <div className="field"><label>Size</label><input value={form.size} onChange={update("size")} placeholder="e.g. 28cm / 5 Litres" required /></div>
-              <div className="field"><label>Material</label><input value={form.material} onChange={update("material")} placeholder="e.g. Aluminium" required /></div>
+              <div className="field"><label>Material</label><input value={form.material} onChange={update("material")} placeholder="e.g. Aluminium, Non-stick coated" required /></div>
               <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
                 <input type="checkbox" style={{ width: "auto" }} checked={form.induction_compatible} onChange={update("induction_compatible")} /> Induction compatible
               </label>
@@ -303,11 +317,27 @@ export default function AdminProducts() {
                 </select>
               </div>
 
-              {(form.item_type === "Microwave" || form.item_type === "Fridge") && (
+              {form.item_type === "Microwave" && (
                 <>
-                  <div className="field"><label>Watts</label><input type="number" value={form.hh_watts} onChange={update("hh_watts")} /></div>
+                  <div className="field"><label>Watts</label><input type="number" value={form.hh_watts} onChange={update("hh_watts")} placeholder="e.g. 900" /></div>
                   <div className="field"><label>Voltage</label><input value={form.hh_voltage} onChange={update("hh_voltage")} placeholder="e.g. 220-240V" /></div>
-                  <div className="field"><label>Capacity (Litres)</label><input type="number" value={form.hh_capacity_litres} onChange={update("hh_capacity_litres")} /></div>
+                  <div className="field"><label>Capacity (Litres)</label><input type="number" value={form.hh_capacity_litres} onChange={update("hh_capacity_litres")} placeholder="e.g. 20" /></div>
+                  <div className="field"><label>Warranty (months)</label><input type="number" value={form.hh_warranty_months} onChange={update("hh_warranty_months")} /></div>
+                </>
+              )}
+
+              {form.item_type === "Fridge" && (
+                <>
+                  <div className="field"><label>Watts</label><input type="number" value={form.hh_watts} onChange={update("hh_watts")} placeholder="e.g. 120" /></div>
+                  <div className="field"><label>Voltage</label><input value={form.hh_voltage} onChange={update("hh_voltage")} placeholder="e.g. 220-240V" /></div>
+                  <div className="field"><label>Capacity (Litres)</label><input type="number" value={form.hh_capacity_litres} onChange={update("hh_capacity_litres")} placeholder="e.g. 150" /></div>
+                  <div className="field">
+                    <label>Frost type</label>
+                    <select value={form.hh_frost_type} onChange={update("hh_frost_type")}>
+                      <option value="No Frost">No Frost</option>
+                      <option value="Frost">Frost (Direct Cool)</option>
+                    </select>
+                  </div>
                   <div className="field"><label>Warranty (months)</label><input type="number" value={form.hh_warranty_months} onChange={update("hh_warranty_months")} /></div>
                 </>
               )}
