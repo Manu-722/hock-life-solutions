@@ -8,7 +8,7 @@ export default function Footer() {
         <div>
           <h4 className="footer-heading">Hawk Life Solutions</h4>
           <p style={{ color: "var(--hl-gray)", maxWidth: 320, margin: 0 }}>
-            Quality cells, induction cookers, cookware, and household appliances — built for everyday Kenyan homes.
+            Quality induction cookers, cookware, and household appliances built for everyday Kenyan homes.
           </p>
           <div style={{ display: "flex", gap: 14, marginTop: 14 }}>
             {/* Replace these href values with your real social media page links */}
@@ -27,15 +27,15 @@ export default function Footer() {
         <div>
           <h4 className="footer-heading">About</h4>
           <p style={{ color: "var(--hl-gray)", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-            Hawk Life Solutions is a Kenyan retailer of cells, induction cookers, cookware, and household appliances.
+            Hawk Life Solutions is a Kenyan retailer of induction cookers, cookware, and household appliances.
             We're committed to honest prices and quality you can trust.
           </p>
         </div>
 
         <div>
-          <h4 className="footer-heading">Contact & payment</h4>
+          <h4 className="footer-heading">Contact</h4>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Phone size={15} /> Available at checkout
+            <Phone size={15} /> 0112660355
           </p>
           <p style={{ color: "var(--hl-gray)", display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <Mail size={15} /> lifesolutions.hawk@gmail.com
