@@ -18,6 +18,9 @@ export default function Footer() {
             <a href="https://facebook.com/hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: "var(--hl-gray)" }}>
               <Facebook size={22} />
             </a>
+            <a href="https://www.tiktok.com/@hawkinduction.254?_r=1&_t=ZS-99HLF1jyF7M" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: "var(--hl-gray)" }}>
+              <TikTok size={22} />
+            </a>
             <a href="https://youtube.com/@hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: "var(--hl-gray)" }}>
               <Youtube size={22} />
             </a>
