@@ -31,7 +31,13 @@ class Command(BaseCommand):
 
         user, created = User.objects.get_or_create(
             username=username,
-            defaults={"email": email, "role": User.Role.ADMIN, "is_staff": True, "must_change_password": True},
+            defaults={
+                "email": email,
+                "role": User.Role.ADMIN,
+                "is_staff": True,
+                "is_superuser": True,
+                "must_change_password": True,
+            },
         )
 
         # SECURITY: once an admin has changed their starter password to
@@ -52,6 +58,7 @@ class Command(BaseCommand):
 
         user.role = User.Role.ADMIN
         user.is_staff = True
+        user.is_superuser = True  # required for full access to Django's own /admin/ panel
         user.must_change_password = True
         user.set_password(starter_password)
         user.save()
