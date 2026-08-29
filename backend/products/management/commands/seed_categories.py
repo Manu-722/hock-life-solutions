@@ -4,13 +4,12 @@ from django.utils.text import slugify
 from products.models import Category
 
 # The categories Hawk Life Solutions actually sells. Slugs matter: the
-# admin dashboard's product form shows extra spec fields (watts/power for
-# induction cookers, size/material for pans and sufurias) based on whether
-# the category slug contains "induction", "sufuria", or "pan".
+# admin dashboard's product form shows extra spec fields based on whether
+# the category slug contains "induction", "cookware", or "household".
 CATEGORIES = [
     "Induction Cookers",
-    "Non-stick Pans",
-    "Sufuria Set",
+    "Cookware",
+    "Household Items",
 ]
 
 
