@@ -28,9 +28,9 @@ export default function Footer() {
             <a href="https://www.youtube.com/@Hawkinduction.254" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
               <Youtube size={22} />
             </a>
-            <a href="https://www.tiktok.com/@hawkinduction.254?_r=1&_t=ZS-99Gb6aX1KgG" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            {/* <a href="https://www.tiktok.com/@hawkinduction.254?_r=1&_t=ZS-99Gb6aX1KgG" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <TikTokIcon />
-            </a>
+            </a> */}
           </div>
         </div>
 
