@@ -10,8 +10,8 @@ function TikTokIcon({ size = 22 }) {
 
 // TODO: replace with your real phone number (E.164 format for the tel:
 // link - country code, no spaces, e.g. +254712345678).
-const PHONE_NUMBER = "+254700000000";
-const PHONE_DISPLAY = "+254 700 000 000";
+const PHONE_NUMBER = "+254112660355";
+const PHONE_DISPLAY = "+254 112 660 355";
 
 export default function Footer() {
   return (
@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">Hawk Life Solutions</h4>
           <p className="hl-footer-text">
-            Quality cells, induction cookers, cookware, and household appliances — built for everyday Kenyan homes.
+            Quality induction cookers, cookware, and household appliances built for everyday Kenyan homes.
           </p>
           <div className="hl-footer-socials">
             {/* Replace these href values with your real social media page links */}
@@ -42,13 +42,13 @@ export default function Footer() {
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">About</h4>
           <p className="hl-footer-text">
-            Hawk Life Solutions is a Kenyan retailer of cells, induction cookers, cookware, and household appliances.
+            Hawk Life Solutions is a Kenyan retailer of induction cookers, cookware, and household appliances.
             We're committed to honest prices and quality you can trust.
           </p>
         </div>
 
         <div className="hl-footer-col">
-          <h4 className="hl-footer-heading">Contact & payment</h4>
+          <h4 className="hl-footer-heading">Contact</h4>
           {/* tel: link - tapping this on a phone opens the dialer directly */}
           <a href={`tel:${PHONE_NUMBER}`} className="hl-footer-text hl-footer-row" style={{ color: "#c7c7cf" }}>
             <Phone size={15} /> {PHONE_DISPLAY}
