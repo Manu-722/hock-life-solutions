@@ -85,26 +85,33 @@ TEMPLATES = [
 WSGI_APPLICATION = "hocklife.wsgi.application"
 
 # ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
 # DATABASE
 # ---------------------------------------------------------------------------
 # Defaults to SQLite for easy local development.
-# For production, these point at Neon (permanent free Postgres hosting -
-# unlike Render's free Postgres, which expires after a period of time).
-# Neon requires SSL and, for pooled connections, channel binding too.
+# For production, these point at Neon (permanent free Postgres hosting).
+# Neon requires SSL and, for pooled connections, channel binding too - but
+# those options are Postgres-specific and must NOT be passed when using
+# SQLite locally (its driver doesn't understand them and crashes).
+_db_engine = os.environ.get("DB_ENGINE", "django.db.backends.sqlite3")
+
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
+        "ENGINE": _db_engine,
         "NAME": os.environ.get("DB_NAME", BASE_DIR / "db.sqlite3"),
         "USER": os.environ.get("DB_USER", ""),
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", ""),
         "PORT": os.environ.get("DB_PORT", ""),
-        "OPTIONS": {
-            "sslmode": os.environ.get("DB_SSLMODE", "prefer"),
-            "channel_binding": os.environ.get("DB_CHANNEL_BINDING", "prefer"),
-        },
     }
 }
+
+if "postgresql" in _db_engine:
+    DATABASES["default"]["OPTIONS"] = {
+        "sslmode": os.environ.get("DB_SSLMODE", "prefer"),
+        "channel_binding": os.environ.get("DB_CHANNEL_BINDING", "prefer"),
+    }
 
 # ---------------------------------------------------------------------------
 # PASSWORD VALIDATION

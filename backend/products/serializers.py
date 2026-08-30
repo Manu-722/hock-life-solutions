@@ -12,8 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class InductionCookerSpecSerializer(serializers.ModelSerializer):
     class Meta:
         model = InductionCookerSpec
-        fields = ["watts", "power_output_levels", "channel_lock_system", "voltage", "warranty_months"]
-
+        fields = ["watts", "power_output_levels", "channel_lock_system", "voltage", "dimensions", "warranty_months"]
 
 class SufuriaSpecSerializer(serializers.ModelSerializer):
     class Meta:

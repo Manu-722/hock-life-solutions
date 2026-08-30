@@ -46,10 +46,9 @@ class Product(models.Model):
     def display_price(self):
         return self.offer_price if (self.is_on_offer and self.offer_price) else self.price
 
-
 class InductionCookerSpec(models.Model):
     """Dedicated fields for the Induction Cooker category, as requested:
-    watts, power output, channel/lock system, and room for more."""
+    watts, power output, channel/lock system, dimensions, and room for more."""
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name="induction_cooker_spec")
     watts = models.PositiveIntegerField(help_text="Power rating in watts, e.g. 2000")
     power_output_levels = models.PositiveIntegerField(help_text="Number of power/heat levels, e.g. 10")
@@ -58,10 +57,15 @@ class InductionCookerSpec(models.Model):
         help_text="e.g. 'Child lock', 'Touch lock', 'Auto shut-off'"
     )
     voltage = models.CharField(max_length=50, blank=True)
+    dimensions = models.CharField(
+        max_length=100, blank=True,
+        help_text="e.g. '32cm x 28cm x 6cm' (L x W x H)"
+    )
     warranty_months = models.PositiveIntegerField(default=12)
 
     def __str__(self):
         return f"Induction spec for {self.product.name}"
+
 
 
 class SufuriaSpec(models.Model):
