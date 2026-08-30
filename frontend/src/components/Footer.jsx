@@ -8,6 +8,11 @@ function TikTokIcon({ size = 22 }) {
   );
 }
 
+// TODO: replace with your real phone number (E.164 format for the tel:
+// link - country code, no spaces, e.g. +254712345678).
+const PHONE_NUMBER = "+254700000000";
+const PHONE_DISPLAY = "+254 700 000 000";
+
 export default function Footer() {
   return (
     <footer className="hl-footer">
@@ -15,20 +20,20 @@ export default function Footer() {
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">Hawk Life Solutions</h4>
           <p className="hl-footer-text">
-            Quality induction cookers, cookware, and household appliances built for everyday Kenyan homes.
+            Quality cells, induction cookers, cookware, and household appliances — built for everyday Kenyan homes.
           </p>
           <div className="hl-footer-socials">
             {/* Replace these href values with your real social media page links */}
-            <a href="https://www.instagram.com/hawkinduction.254?igsi=MWRpejU0c2ZoaXN0OA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a href="https://instagram.com/hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <Instagram size={22} />
             </a>
-            <a href="https://www.facebook.com/share/1F44hup4Rz/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <a href="https://facebook.com/hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
               <Facebook size={22} />
             </a>
-            <a href="https://www.youtube.com/@Hawkinduction.254" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <a href="https://youtube.com/@hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
               <Youtube size={22} />
             </a>
-            <a href="https://www.tiktok.com/@hawkinduction.254?_r=1&_t=ZS-99Gb6aX1KgG" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <a href="https://tiktok.com/@hawklifesolutions" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <TikTokIcon />
             </a>
           </div>
@@ -37,15 +42,20 @@ export default function Footer() {
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">About</h4>
           <p className="hl-footer-text">
-            Hawk Life Solutions is a Kenyan retailer of induction cookers, cookware, and household appliances.
+            Hawk Life Solutions is a Kenyan retailer of cells, induction cookers, cookware, and household appliances.
             We're committed to honest prices and quality you can trust.
           </p>
         </div>
 
         <div className="hl-footer-col">
-          <h4 className="hl-footer-heading">Contact</h4>
-          <p className="hl-footer-text hl-footer-row"><Phone size={15} /> 0112660355</p>
-          <p className="hl-footer-text hl-footer-row"><Mail size={15} /> lifesolutions.hawk@gmail.com</p>
+          <h4 className="hl-footer-heading">Contact & payment</h4>
+          {/* tel: link - tapping this on a phone opens the dialer directly */}
+          <a href={`tel:${PHONE_NUMBER}`} className="hl-footer-text hl-footer-row" style={{ color: "#c7c7cf" }}>
+            <Phone size={15} /> {PHONE_DISPLAY}
+          </a>
+          <a href="mailto:lifesolutions.hawk@gmail.com" className="hl-footer-text hl-footer-row" style={{ color: "#c7c7cf" }}>
+            <Mail size={15} /> lifesolutions.hawk@gmail.com
+          </a>
           <p className="hl-footer-text hl-footer-row"><MapPin size={15} /> Nairobi, Kenya</p>
         </div>
       </div>

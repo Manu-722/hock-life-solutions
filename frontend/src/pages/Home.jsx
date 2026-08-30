@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal, PackageSearch, Flame, UtensilsCrossed, Soup, LayoutGrid } from "lucide-react";
+import { Search, SlidersHorizontal, PackageSearch, Flame, UtensilsCrossed, Soup, Refrigerator, LayoutGrid } from "lucide-react";
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
 
-// Picks an icon for a category based on its slug. Falls back to a generic
-// grid icon for any category that doesn't match a known keyword, so new
-// categories the admin adds later still get something sensible.
+// Picks an icon for a category based on its slug. Named distinctly from
+// the page component itself (which is also called "Home") to avoid any
+// naming collision - that mismatch was the cause of the earlier
+// "HomeIcon is not defined" error.
 function iconForCategory(slug) {
   if (slug.includes("induction")) return Flame;
   if (slug.includes("cookware") || slug.includes("pan") || slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
-  if (slug.includes("household")) return HomeIcon;
+  if (slug.includes("household")) return Refrigerator;
   return LayoutGrid;
 }
 
@@ -29,9 +30,6 @@ export default function Home() {
     client.get("/products/categories/").then((res) => setCategories(res.data));
   }, []);
 
-  // Accepts overrides so a caller can pass the NEW value of a filter
-  // immediately, instead of relying on React state (which hasn't updated
-  // yet in the same tick a checkbox/button was just clicked).
   const runSearch = async (overrides = {}) => {
     setLoading(true);
     const params = {};
@@ -58,9 +56,6 @@ export default function Home() {
     runSearch({ category: next });
   };
 
-  // "On offer only" now filters instantly the moment it's toggled - same
-  // instant behavior as the category boxes - instead of requiring a
-  // separate click on the Search button afterward.
   const toggleOfferOnly = (e) => {
     const next = e.target.checked;
     setOnOfferOnly(next);
@@ -71,13 +66,13 @@ export default function Home() {
     <div>
       <div className="hero">
         <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Reliable induction cookers, and kitchenware trusted quality, honest prices.</p>
+        <p>Reliable cells, induction cookers, cookware, and household appliances — trusted quality, honest prices.</p>
       </div>
 
       {slides.length > 0 ? (
         <Slideshow slides={slides} />
       ) : (
-        <div className="slideshow-empty">No current offers  check back soon!</div>
+        <div className="slideshow-empty">No current offers — check back soon!</div>
       )}
 
       {categories.length > 0 && (
@@ -109,7 +104,7 @@ export default function Home() {
         <div className="field" style={{ flex: 1, minWidth: 220 }}>
           <label><Search size={14} style={{ verticalAlign: "-2px" }} /> Search</label>
           <input
-            placeholder="Search cells, cookers, sufurias..."
+            placeholder="Search cells, cookers, cookware..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") runSearch(); }}
