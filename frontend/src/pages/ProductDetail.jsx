@@ -66,6 +66,9 @@ export default function ProductDetail() {
               <li>Power levels: {product.induction_cooker_spec.power_output_levels}</li>
               <li>Lock system: {product.induction_cooker_spec.channel_lock_system}</li>
               <li>Voltage: {product.induction_cooker_spec.voltage}</li>
+              {product.induction_cooker_spec.dimensions && (
+                <li>Dimensions: {product.induction_cooker_spec.dimensions}</li>
+              )}
               <li>Warranty: {product.induction_cooker_spec.warranty_months} months</li>
             </ul>
           )}

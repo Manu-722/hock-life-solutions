@@ -13,11 +13,12 @@ const emptyForm = {
   in_stock: true,
   is_on_offer: false,
   offer_price: "",
-  // Induction cooker fields
+    // Induction cooker fields
   watts: "",
   power_output_levels: "",
   channel_lock_system: "",
   voltage: "",
+  dimensions: "",
   warranty_months: 12,
   // Cookware fields (sufuria, non-stick pans, pots, etc.)
   size: "",
@@ -91,6 +92,7 @@ export default function AdminProducts() {
       power_output_levels: p.induction_cooker_spec?.power_output_levels || "",
       channel_lock_system: p.induction_cooker_spec?.channel_lock_system || "",
       voltage: p.induction_cooker_spec?.voltage || "",
+      dimensions: p.induction_cooker_spec?.dimensions || "",
       warranty_months: p.induction_cooker_spec?.warranty_months || 12,
       size: p.sufuria_spec?.size || "",
       material: p.sufuria_spec?.material || "",
@@ -122,11 +124,12 @@ export default function AdminProducts() {
       offer_price: form.is_on_offer ? form.offer_price || null : null,
     };
     if (isInduction) {
-      payload.induction_cooker_spec = {
+        payload.induction_cooker_spec = {
         watts: form.watts || 0,
         power_output_levels: form.power_output_levels || 0,
         channel_lock_system: form.channel_lock_system,
         voltage: form.voltage,
+        dimensions: form.dimensions,
         warranty_months: form.warranty_months || 12,
       };
     }
@@ -286,6 +289,7 @@ export default function AdminProducts() {
               <div className="field"><label>Power output levels</label><input type="number" value={form.power_output_levels} onChange={update("power_output_levels")} required /></div>
               <div className="field"><label>Channel / lock system</label><input value={form.channel_lock_system} onChange={update("channel_lock_system")} placeholder="e.g. Child lock, Touch lock" /></div>
               <div className="field"><label>Voltage</label><input value={form.voltage} onChange={update("voltage")} placeholder="e.g. 220-240V" /></div>
+              <div className="field"><label>Dimensions</label><input value={form.dimensions} onChange={update("dimensions")} placeholder="e.g. 32cm x 28cm x 6cm" /></div>
               <div className="field"><label>Warranty (months)</label><input type="number" value={form.warranty_months} onChange={update("warranty_months")} /></div>
             </>
           )}
