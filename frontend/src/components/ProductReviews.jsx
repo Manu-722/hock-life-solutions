@@ -120,7 +120,7 @@ export default function ProductReviews({ productId }) {
           {reviews.map((r) => (
             <div key={r.id} style={{ borderTop: "1px solid var(--hl-border)", padding: "14px 0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <strong>{r.username}</strong>
+                <strong>{r.display_name}</strong>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <StarRow rating={r.rating} />
                   {user?.is_admin && (
