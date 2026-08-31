@@ -84,8 +84,18 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ["id", "product", "username", "rating", "comment", "created_at", "updated_at"]
-        read_only_fields = ["username", "created_at", "updated_at"]
+        fields = ["id", "product", "username", "display_name", "rating", "comment", "created_at", "updated_at"]
+        read_only_fields = ["username", "display_name", "created_at", "updated_at"]
+
+    def get_display_name(self, obj):
+        # Prefer the person's real first name (captured at signup, including
+        # from Google Sign-In) over their raw username - usernames can look
+        # messy (e.g. "john_5Lnheg", generated to guarantee uniqueness for
+        # Google accounts), but the first name is always clean.
+        if obj.user.first_name:
+            return obj.user.first_name
+        return obj.user.username

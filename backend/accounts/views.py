@@ -195,8 +195,19 @@ class FirebaseLoginView(APIView):
 
         user = User.objects.filter(email__iexact=email).first()
         if not user:
+            # Try a clean username first (just the email prefix). Only add
+            # a disambiguating suffix if that exact username is already
+            # taken by someone else - keeps usernames readable in the
+            # normal case instead of always appending a random ID.
+            base_username = email.split("@")[0]
+            username = base_username
+            suffix = 1
+            while User.objects.filter(username=username).exists():
+                suffix += 1
+                username = f"{base_username}{suffix}"
+
             user = User.objects.create(
-                username=email.split("@")[0] + "_" + decoded.get("uid", "")[:6],
+                username=username,
                 email=email,
                 first_name=first_name,
                 last_name=last_name,
