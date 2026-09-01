@@ -1,22 +1,22 @@
 from django.conf import settings
 from django.http import HttpResponse
 
-from products.models import Category, Product
+from products.models import Product
 
 
 def sitemap_view(request):
     """
-    Generates sitemap.xml listing the homepage, every category, and every
-    product - all using the FRONTEND's real domain (not this API server),
-    since those are the actual pages people and Google should visit.
-    Helps Google discover and index every product page automatically as
-    the catalog grows, without needing manual "Request Indexing" clicks.
+    Generates sitemap.xml listing the homepage and every in-stock product -
+    all using the FRONTEND's real domain (not this API server), since those
+    are the actual pages people and Google should visit. URLs must exactly
+    match the real route format used in the React app (no trailing slash
+    on product URLs) to avoid any mismatch/404 confusion for Google.
     """
     base = settings.FRONTEND_PUBLIC_URL.rstrip("/")
     urls = [f"{base}/"]
 
-    for product in Product.objects.filter(in_stock=True).only("id", "updated_at"):
-        urls.append(f"{base}/product/{product.id}/")
+    for product in Product.objects.filter(in_stock=True).only("id"):
+        urls.append(f"{base}/product/{product.id}")
 
     xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
     xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
