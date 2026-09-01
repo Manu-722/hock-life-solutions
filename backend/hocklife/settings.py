@@ -156,6 +156,7 @@ if USE_CLOUDINARY_STORAGE:
     }
 
 BACKEND_PUBLIC_URL = os.environ.get("BACKEND_PUBLIC_URL", "http://localhost:8000")
+FRONTEND_PUBLIC_URL = os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:5173")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
