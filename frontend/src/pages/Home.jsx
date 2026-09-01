@@ -3,11 +3,11 @@ import { Search, SlidersHorizontal, PackageSearch, Flame, UtensilsCrossed, Soup,
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
+import { useSEO } from "../hooks/useSEO";
 
 // Picks an icon for a category based on its slug. Named distinctly from
 // the page component itself (which is also called "Home") to avoid any
-// naming collision - that mismatch was the cause of the earlier
-// "HomeIcon is not defined" error.
+// naming collision.
 function iconForCategory(slug) {
   if (slug.includes("induction")) return Flame;
   if (slug.includes("cookware") || slug.includes("pan") || slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
@@ -16,6 +16,11 @@ function iconForCategory(slug) {
 }
 
 export default function Home() {
+  useSEO({
+    title: "Induction Cookers, Cookware & Household Appliances in Kenya | Hawk Life Solutions",
+    description: "Shop quality induction cookers, cookware, and household appliances in Kenya at honest prices. Hawk Life Solutions - trusted by everyday Kenyan homes.",
+  });
+
   const [slides, setSlides] = useState([]);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -66,13 +71,13 @@ export default function Home() {
     <div>
       <div className="hero">
         <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Reliable induction cookers, cookware, and household appliances trusted quality, honest prices.</p>
+        <p>Reliable cells, induction cookers, cookware, and household appliances — trusted quality, honest prices.</p>
       </div>
 
       {slides.length > 0 ? (
         <Slideshow slides={slides} />
       ) : (
-        <div className="slideshow-empty">No current offers check back soon.</div>
+        <div className="slideshow-empty">No current offers — check back soon!</div>
       )}
 
       {categories.length > 0 && (

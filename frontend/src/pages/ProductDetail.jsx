@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useSEO } from "../hooks/useSEO";
 import ProductReviews from "../components/ProductReviews";
 
 const HOUSEHOLD_LABELS = {
@@ -30,6 +31,44 @@ export default function ProductDetail() {
   useEffect(() => {
     client.get(`/products/${id}/`).then((res) => setProduct(res.data));
   }, [id]);
+
+  useSEO({
+    title: product
+      ? `${product.name} - Buy in Kenya | Hawk Life Solutions`
+      : "Loading... | Hawk Life Solutions",
+    description: product?.description
+      ? product.description.slice(0, 155)
+      : "Shop quality induction cookers, cookware, and household appliances in Kenya.",
+  });
+
+  // Structured data (JSON-LD) tells Google this is a real Product with a
+  // price and availability - this is what enables "rich results" in
+  // search (star ratings, price, in-stock badge shown directly in the
+  // search listing), which meaningfully improves click-through rates.
+  useEffect(() => {
+    if (!product) return;
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description: product.description || product.name,
+      image: product.image || undefined,
+      category: product.category_name,
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "KES",
+        price: product.display_price,
+        availability: product.in_stock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        url: window.location.href,
+      },
+    });
+    document.head.appendChild(script);
+    return () => document.head.removeChild(script);
+  }, [product]);
 
   if (!product) return <p>Loading...</p>;
 

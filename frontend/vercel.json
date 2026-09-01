@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://api.hawklife.co.ke/sitemap.xml" }
+  ]
+}
