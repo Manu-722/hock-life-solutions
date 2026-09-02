@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "https://api.hawklife.co.ke/sitemap.xml" }
+    { "source": "/sitemap.xml", "destination": "https://api.hawklife.co.ke/sitemap.xml" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
