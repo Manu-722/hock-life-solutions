@@ -114,7 +114,7 @@ export default function ProductReviews({ productId }) {
       {loading ? (
         <p style={{ color: "var(--hl-gray)" }}>Loading reviews...</p>
       ) : reviews.length === 0 ? (
-        <p style={{ color: "var(--hl-gray)" }}>No reviews yet - be the first!</p>
+        <p style={{ color: "var(--hl-gray)" }}>No reviews yet, you could be the first!</p>
       ) : (
         <div>
           {reviews.map((r) => (
