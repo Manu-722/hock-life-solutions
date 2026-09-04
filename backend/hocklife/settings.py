@@ -203,6 +203,12 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+
+# Without an explicit timeout, a stuck/slow SMTP connection can hang the
+# request forever, causing gunicorn to kill the entire worker process
+# (which looks like a random crash/CORS failure from the browser's side).
+# 10 seconds is generous for SMTP but fails fast instead of hanging.
+EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <no-reply@hawklife.com>")
 
 PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5

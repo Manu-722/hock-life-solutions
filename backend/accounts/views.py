@@ -104,11 +104,14 @@ class ForgotPasswordView(APIView):
                 fail_silently=False,
             )
         except Exception as exc:
+            print(f"[ForgotPassword] Could not send reset email to {user.email}: {exc}")
+
+        return Response({"detail": "If that email exists, a code has been sent."})
             # Don't leak whether the email exists to the client, but DO log
             # the real reason to the server console - a misconfigured SMTP
             # backend (wrong password, blocked port, etc.) otherwise fails
             # completely silently and looks like "codes never arrive".
-            print(f"[ForgotPassword] Could not send reset email to {user.email}: {exc}")
+        print(f"[ForgotPassword] Could not send reset email to {user.email}: {exc}")
 
         return Response({"detail": "If that email exists, a code has been sent."})
 
