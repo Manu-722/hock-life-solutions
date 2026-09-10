@@ -210,6 +210,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 # 10 seconds is generous for SMTP but fails fast instead of hanging.
 EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <no-reply@hawklife.com>")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 
 PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 

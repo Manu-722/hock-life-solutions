@@ -1,46 +1,34 @@
-import smtplib
-import socket
-
-from django.core.mail.backends.smtp import EmailBackend as DjangoSMTPBackend
+from django.conf import settings
+from django.core.mail.backends.base import BaseEmailBackend
 
 
-class IPv4SMTP(smtplib.SMTP):
+class ResendEmailBackend(BaseEmailBackend):
     """
-    A plain smtplib.SMTP that forces IPv4 when resolving the mail server's
-    address. Needed because some hosts (Render included) resolve
-    smtp.gmail.com to an IPv6 address but don't have working IPv6 outbound
-    routing, causing an immediate "Network is unreachable" error before
-    the connection even gets a chance to fall back to IPv4.
+    Sends email via Resend's HTTPS API instead of raw SMTP. Necessary
+    because Render blocks all outbound SMTP ports (25, 465, 587) on free
+    web services - Resend's API goes over plain HTTPS (port 443), which
+    is never blocked, so this works reliably on Render's free tier.
     """
 
-    def _get_socket(self, host, port, timeout):
-        if timeout is not None and not timeout:
-            raise ValueError("Non-blocking socket (timeout=0) is not supported")
-        addr_info = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
-        family, socktype, proto, _, sockaddr = addr_info[0]
-        sock = socket.socket(family, socktype, proto)
-        if timeout is not None:
-            sock.settimeout(timeout)
-        sock.connect(sockaddr)
-        return sock
+    def send_messages(self, email_messages):
+        if not email_messages:
+            return 0
 
+        import resend
+        resend.api_key = settings.RESEND_API_KEY
 
-class IPv4EmailBackend(DjangoSMTPBackend):
-    """Django SMTP email backend that connects over IPv4 only."""
-
-    def open(self):
-        if self.connection:
-            return False
-        try:
-            self.connection = IPv4SMTP(self.host, self.port, timeout=self.timeout)
-            if self.use_tls:
-                self.connection.ehlo()
-                self.connection.starttls()
-                self.connection.ehlo()
-            if self.username and self.password:
-                self.connection.login(self.username, self.password)
-            return True
-        except Exception:
-            if not self.fail_silently:
-                raise
-            return False
+        sent_count = 0
+        for message in email_messages:
+            try:
+                resend.Emails.send({
+                    "from": message.from_email,
+                    "to": message.to,
+                    "subject": message.subject,
+                    "text": message.body,
+                })
+                sent_count += 1
+            except Exception as exc:
+                print(f"[ResendEmailBackend] Failed to send to {message.to}: {exc}")
+                if not self.fail_silently:
+                    raise
+        return sent_count
