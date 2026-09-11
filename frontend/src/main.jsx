@@ -25,3 +25,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+// Registers the image-caching service worker (see public/sw.js) so
+// product/slideshow images persist in the browser across visits, loading
+// instantly on return trips instead of re-downloading every time.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}

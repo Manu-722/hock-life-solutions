@@ -42,9 +42,7 @@ export default function ProductDetail() {
   });
 
   // Structured data (JSON-LD) tells Google this is a real Product with a
-  // price and availability - this is what enables "rich results" in
-  // search (star ratings, price, in-stock badge shown directly in the
-  // search listing), which meaningfully improves click-through rates.
+  // price and availability - enables "rich results" in search.
   useEffect(() => {
     if (!product) return;
     const script = document.createElement("script");
@@ -89,6 +87,7 @@ export default function ProductDetail() {
           src={product.image || "https://placehold.co/500x400?text=Hawk+Life"}
           alt={product.name}
           className="product-detail-img"
+          decoding="async"
         />
         <div style={{ flex: 1, minWidth: 260 }}>
           <div>

@@ -24,7 +24,12 @@ export default function ProductCard({ product }) {
     <div className="card product-card">
       <div className="product-image-wrap">
         <Link to={`/product/${product.id}`}>
-          <img src={product.image || "https://placehold.co/400x300?text=Hawk+Life"} alt={product.name} />
+          <img
+            src={product.image || "https://placehold.co/400x300?text=Hawk+Life"}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+          />
         </Link>
         {product.is_on_offer && <span className="badge offer badge-corner-left">OFFER</span>}
         {!product.in_stock && <span className="badge out badge-corner-right">OUT OF STOCK</span>}
