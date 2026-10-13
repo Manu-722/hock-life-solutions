@@ -71,7 +71,7 @@ export default function Home() {
     <div>
       <div className="hero">
         <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Reliable induction cookers, cookware, and household appliances trusted quality, honest prices.</p>
+        <p>Effortless Induction Cookers, Flawless Cookware, and Curated Home Essentials</p>
       </div>
 
       {slides.length > 0 ? (
