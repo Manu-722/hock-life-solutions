@@ -6,14 +6,13 @@ from products.models import Product
 
 def sitemap_view(request):
     """
-    Generates sitemap.xml listing the homepage and every in-stock product -
-    all using the FRONTEND's real domain (not this API server), since those
-    are the actual pages people and Google should visit. URLs must exactly
-    match the real route format used in the React app (no trailing slash
-    on product URLs) to avoid any mismatch/404 confusion for Google.
+    Generates sitemap.xml listing the homepage, the About and Return Policy
+    pages, and every in-stock product - all using the FRONTEND's real
+    domain (not this API server). URLs must exactly match the real route
+    format used in the React app (no trailing slash on inner pages).
     """
     base = settings.FRONTEND_PUBLIC_URL.rstrip("/")
-    urls = [f"{base}/"]
+    urls = [f"{base}/", f"{base}/about", f"{base}/return-policy"]
 
     for product in Product.objects.filter(in_stock=True).only("id"):
         urls.append(f"{base}/product/{product.id}")

@@ -1,19 +1,8 @@
+from django.conf import settings
 from rest_framework import serializers
 
+from hocklife.image_utils import cloudinary_variant
 from .models import Category, InductionCookerSpec, Product, Review, SufuriaSpec
-
-
-def _optimize_cloudinary_url(url):
-    """
-    Injects Cloudinary's automatic format + quality optimization into an
-    image URL - serves WebP/AVIF to browsers that support it and picks a
-    smart compression level automatically, meaningfully shrinking file
-    size (and therefore load time) for every visitor, not just returning
-    ones. Safe no-op for any URL that isn't actually a Cloudinary one.
-    """
-    if url and "res.cloudinary.com" in url and "/upload/" in url and "f_auto" not in url:
-        return url.replace("/upload/", "/upload/f_auto,q_auto/", 1)
-    return url
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -51,10 +40,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Always return a full absolute URL for the image (or null), never a
-        bare relative path - a relative path only works by accident when
-        the frontend happens to be served from the same origin as the API.
-        Also applies Cloudinary auto-optimization (see helper above).
+        Always return full absolute image URLs (or null), never a bare
+        relative path. "image" is a 900px copy for the product page and
+        "image_thumb" is a small 480px copy for the product cards, so the
+        shop grid downloads far less data.
         """
         data = super().to_representation(instance)
         if instance.image:
@@ -62,11 +51,12 @@ class ProductSerializer(serializers.ModelSerializer):
             if request is not None:
                 url = request.build_absolute_uri(instance.image.url)
             else:
-                from django.conf import settings
                 url = f"{settings.BACKEND_PUBLIC_URL.rstrip('/')}{instance.image.url}"
-            data["image"] = _optimize_cloudinary_url(url)
+            data["image"] = cloudinary_variant(url, 900)
+            data["image_thumb"] = cloudinary_variant(url, 480)
         else:
             data["image"] = None
+            data["image_thumb"] = None
         return data
 
     def create(self, validated_data):
@@ -104,6 +94,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ["username", "display_name", "created_at", "updated_at"]
 
     def get_display_name(self, obj):
+        # Prefer the person's real first name over their raw username.
         if obj.user.first_name:
             return obj.user.first_name
         return obj.user.username

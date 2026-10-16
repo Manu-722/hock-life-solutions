@@ -46,8 +46,8 @@ INSTALLED_APPS = [
 ]
 
 # Cloudinary storage for product/slideshow images - avoids Render's free
-# tier wiping uploaded files on every redeploy/restart. Only added when
-# actually configured, so local dev keeps using plain local file storage.
+# tier wiping uploaded files on every redeploy/restart. Only switched on
+# when configured, so local development keeps using plain local storage.
 USE_CLOUDINARY_STORAGE = os.environ.get("USE_CLOUDINARY_STORAGE", "False") == "True"
 if USE_CLOUDINARY_STORAGE:
     INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]
@@ -84,8 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "hocklife.wsgi.application"
 
-# ---------------------------------------------------------------------------
-#
 # ---------------------------------------------------------------------------
 # DATABASE
 # ---------------------------------------------------------------------------
@@ -137,7 +135,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# IMPORTANT: when STORAGES is defined, it must always include a "default"
+# entry (where uploaded images go). It was missing before, which crashed
+# every image field with "Could not find config for 'default'" whenever
+# Cloudinary wasn't switched on (i.e. when running locally).
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
@@ -203,11 +208,8 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-
-# Without an explicit timeout, a stuck/slow SMTP connection can hang the
-# request forever, causing gunicorn to kill the entire worker process
-# (which looks like a random crash/CORS failure from the browser's side).
-# 10 seconds is generous for SMTP but fails fast instead of hanging.
+# Without an explicit timeout, a stuck SMTP connection can hang the request
+# forever and get the whole worker killed. Fail fast instead.
 EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <no-reply@hawklife.com>")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")

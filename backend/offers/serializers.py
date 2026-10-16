@@ -1,11 +1,8 @@
+from django.conf import settings
 from rest_framework import serializers
+
+from hocklife.image_utils import cloudinary_variant
 from .models import SlideshowItem
-
-
-def _optimize_cloudinary_url(url):
-    if url and "res.cloudinary.com" in url and "/upload/" in url and "f_auto" not in url:
-        return url.replace("/upload/", "/upload/f_auto,q_auto/", 1)
-    return url
 
 
 class SlideshowItemSerializer(serializers.ModelSerializer):
@@ -20,7 +17,7 @@ class SlideshowItemSerializer(serializers.ModelSerializer):
             if request is not None:
                 url = request.build_absolute_uri(instance.image.url)
             else:
-                from django.conf import settings
                 url = f"{settings.BACKEND_PUBLIC_URL.rstrip('/')}{instance.image.url}"
-            data["image"] = _optimize_cloudinary_url(url)
+            # Slides are shown wide, so 1400px is plenty even on large screens.
+            data["image"] = cloudinary_variant(url, 1400)
         return data
