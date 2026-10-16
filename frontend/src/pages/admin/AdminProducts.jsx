@@ -13,7 +13,7 @@ const emptyForm = {
   in_stock: true,
   is_on_offer: false,
   offer_price: "",
-    // Induction cooker fields
+  // Induction cooker fields
   watts: "",
   power_output_levels: "",
   channel_lock_system: "",
@@ -124,7 +124,7 @@ export default function AdminProducts() {
       offer_price: form.is_on_offer ? form.offer_price || null : null,
     };
     if (isInduction) {
-        payload.induction_cooker_spec = {
+      payload.induction_cooker_spec = {
         watts: form.watts || 0,
         power_output_levels: form.power_output_levels || 0,
         channel_lock_system: form.channel_lock_system,

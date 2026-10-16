@@ -1,14 +1,14 @@
-// Caches product/slideshow images (served from Cloudinary) so returning
-// visitors get instant loads instead of re-downloading everything.
+// Keeps product and slideshow images (served from Cloudinary) in the
+// browser, so images the visitor has already seen load instantly next time.
 //
 // SECURITY: this only ever touches image requests to res.cloudinary.com.
-// It never intercepts, caches, or stores anything from your own API
-// (api.hawklife.co.ke) or website (hawklife.co.ke) - logins, passwords,
-// and account data are always fetched fresh from the server, never
-// cached here. The explicit allow-list below (IMAGE_HOSTS) is the only
-// thing this service worker is allowed to act on.
-const CACHE_NAME = "hawklife-images-v2";
+// It never intercepts or stores anything from your own API or website, so
+// logins, passwords and account data are always fetched fresh from the
+// server. The allow-list below (IMAGE_HOSTS) is the only thing it acts on.
+const CACHE_NAME = "hawklife-images-v3";
 const IMAGE_HOSTS = ["res.cloudinary.com"];
+// Keep the stored images to a sensible size. Oldest ones are dropped first.
+const MAX_ENTRIES = 60;
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -23,29 +23,37 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+async function trimCache(cache) {
+  const keys = await cache.keys();
+  if (keys.length > MAX_ENTRIES) {
+    await Promise.all(keys.slice(0, keys.length - MAX_ENTRIES).map((k) => cache.delete(k)));
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Hard allow-list: only image-hosting requests are ever touched. Every
-  // other request (API calls, page navigation, login, etc.) is ignored
-  // completely and falls through to the network exactly as normal.
+  // Only image hosts are ever touched. Everything else (API calls, pages,
+  // login) is ignored here and goes to the network exactly as normal.
   if (event.request.method !== "GET" || !IMAGE_HOSTS.includes(url.hostname)) {
     return;
   }
 
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
+      // Cloudinary image URLs include a version, so a saved copy never goes
+      // stale. Serve it straight from the cache when we have it.
       const cached = await cache.match(event.request);
-      const networkFetch = fetch(event.request)
-        .then((response) => {
-          if (response.ok || response.type === "opaque") {
-            cache.put(event.request, response.clone());
-          }
-          return response;
-        })
-        .catch(() => cached);
+      if (cached) return cached;
 
-      return cached || networkFetch;
+      const response = await fetch(event.request);
+      if (response.ok || response.type === "opaque") {
+        cache
+          .put(event.request, response.clone())
+          .then(() => trimCache(cache))
+          .catch(() => {});
+      }
+      return response;
     })
   );
 });

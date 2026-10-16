@@ -133,7 +133,7 @@ export default function AdminSlideshow() {
 
       <h3 className="section-title">All slides</h3>
       {slides.length === 0 ? (
-        <p style={{ color: "var(--hl-gray)" }}>No slides yet - add one above.</p>
+        <p style={{ color: "var(--hl-gray)" }}>No slides yet. Add one above.</p>
       ) : (
         <div className="table-scroll">
           <table>

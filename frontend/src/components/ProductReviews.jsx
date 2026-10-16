@@ -70,7 +70,7 @@ export default function ProductReviews({ productId }) {
   const doDeleteReview = async (r) => {
     try {
       await client.delete(`/products/reviews/${r.id}/`);
-      toast.success(`Removed ${r.username}'s review.`);
+      toast.success(`Removed ${r.display_name || r.username}'s review.`);
       load();
     } catch {
       toast.error("Could not delete that review.");
@@ -78,7 +78,7 @@ export default function ProductReviews({ productId }) {
   };
 
   const deleteReview = (r) => {
-    confirmToast(`Remove ${r.username}'s review? This can't be undone.`, () => doDeleteReview(r));
+    confirmToast(`Remove ${r.display_name || r.username}'s review? This can't be undone.`, () => doDeleteReview(r));
   };
 
   const average = reviews.length
@@ -114,13 +114,13 @@ export default function ProductReviews({ productId }) {
       {loading ? (
         <p style={{ color: "var(--hl-gray)" }}>Loading reviews...</p>
       ) : reviews.length === 0 ? (
-        <p style={{ color: "var(--hl-gray)" }}>No reviews yet, you could be the first!</p>
+        <p style={{ color: "var(--hl-gray)" }}>No reviews yet. Be the first!</p>
       ) : (
         <div>
           {reviews.map((r) => (
             <div key={r.id} style={{ borderTop: "1px solid var(--hl-border)", padding: "14px 0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <strong>{r.display_name}</strong>
+                <strong>{r.display_name || r.username}</strong>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <StarRow rating={r.rating} />
                   {user?.is_admin && (

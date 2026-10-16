@@ -71,7 +71,7 @@ export default function AdminOrders() {
       </p>
 
       {orders.length === 0 ? (
-        <p style={{ color: "var(--hl-gray)" }}>No orders yet - they'll appear here as soon as a customer checks out.</p>
+        <p style={{ color: "var(--hl-gray)" }}>No orders yet. They'll appear here as soon as a customer checks out.</p>
       ) : (
         <div className="table-scroll">
           <table>

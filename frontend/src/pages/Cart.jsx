@@ -1,12 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
 export default function Cart() {
-  const { items, updateQuantity, removeItem, total } = useCart();
+  const { items, updateQuantity, removeItem, total, ready } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  if (!ready) {
+    return <p style={{ color: "var(--hl-gray)" }}>Loading your cart...</p>;
+  }
 
   if (items.length === 0) {
     return (
@@ -18,12 +23,15 @@ export default function Cart() {
     );
   }
 
+  // Sign-in is only needed here, at checkout. Guests are sent to login and
+  // brought straight back to checkout afterwards, with their cart intact.
   const goToCheckout = () => {
     if (!user) {
-      navigate("/login");
-    } else {
-      navigate("/checkout");
+      toast.info("Please sign in to complete your order. Your cart will be waiting for you.");
+      navigate("/login", { state: { from: "/checkout" } });
+      return;
     }
+    navigate("/checkout");
   };
 
   return (
@@ -42,7 +50,10 @@ export default function Cart() {
                 <td>
                   <input
                     type="number" min={1} value={item.quantity} style={{ width: 70 }}
-                    onChange={(e) => updateQuantity(item.id, Number(e.target.value))}
+                    onChange={(e) => {
+                      const q = parseInt(e.target.value, 10);
+                      if (!Number.isNaN(q)) updateQuantity(item.id, q);
+                    }}
                   />
                 </td>
                 <td>KES {(item.price * item.quantity).toLocaleString()}</td>
@@ -53,8 +64,15 @@ export default function Cart() {
         </table>
       </div>
       <h3 style={{ textAlign: "right", marginTop: 20 }}>Total: <span className="price">KES {total.toLocaleString()}</span></h3>
+      {!user && (
+        <p style={{ textAlign: "right", color: "var(--hl-gray)", fontSize: "0.9rem", margin: "0 0 12px" }}>
+          You'll be asked to sign in or create an account at checkout.
+        </p>
+      )}
       <div style={{ textAlign: "right" }}>
-        <button className="btn" onClick={goToCheckout}>Checkout</button>
+        <button className="btn" onClick={goToCheckout}>
+          {user ? "Checkout" : "Sign in to checkout"}
+        </button>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import client from "../api/client";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
 import { useSEO } from "../hooks/useSEO";
 import ProductReviews from "../components/ProductReviews";
 
@@ -25,8 +25,6 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     client.get(`/products/${id}/`).then((res) => setProduct(res.data));
@@ -34,7 +32,7 @@ export default function ProductDetail() {
 
   useSEO({
     title: product
-      ? `${product.name} - Buy in Kenya | Hawk Life Solutions`
+      ? `Buy ${product.name} in Kenya | Hawk Life Solutions`
       : "Loading... | Hawk Life Solutions",
     description: product?.description
       ? product.description.slice(0, 155)
@@ -42,7 +40,7 @@ export default function ProductDetail() {
   });
 
   // Structured data (JSON-LD) tells Google this is a real Product with a
-  // price and availability - enables "rich results" in search.
+  // price and availability, which enables rich results in search.
   useEffect(() => {
     if (!product) return;
     const script = document.createElement("script");
@@ -70,12 +68,12 @@ export default function ProductDetail() {
 
   if (!product) return <p>Loading...</p>;
 
+  // Anyone can add to cart, signed in or not. Sign-in is only required
+  // later, at checkout.
   const handleAdd = () => {
-    if (!user) {
-      navigate("/login", { state: { from: "add_to_cart" } });
-      return;
-    }
-    addItem(product, qty);
+    const quantity = Math.max(1, Number(qty) || 1);
+    addItem(product, quantity);
+    toast.success(`${quantity} x ${product.name} added to your cart.`);
   };
 
   const household = product.extra_specs && product.extra_specs.item_type ? product.extra_specs : null;
@@ -139,9 +137,9 @@ export default function ProductDetail() {
           </p>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value))} style={{ width: 80 }} />
+            <input type="number" min={1} value={qty} onChange={(e) => setQty(e.target.value)} style={{ width: 80 }} />
             <button className="btn" disabled={!product.in_stock} onClick={handleAdd}>
-              {product.in_stock ? (user ? "Add to cart" : "Login to buy") : "Out of stock"}
+              {product.in_stock ? "Add to cart" : "Out of stock"}
             </button>
           </div>
         </div>

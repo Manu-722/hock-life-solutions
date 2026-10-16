@@ -1,10 +1,13 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function RequireAuth({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <p className="container">Loading...</p>;
-  if (!user) return <Navigate to="/login" replace />;
+  // Remember where the person was trying to go (e.g. /checkout), so login
+  // can send them straight back there afterwards.
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   return children;
 }
 

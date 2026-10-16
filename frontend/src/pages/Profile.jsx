@@ -80,8 +80,8 @@ export default function Profile() {
             <>
               <p><strong>Username:</strong> {user.username}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Name:</strong> {user.first_name || user.last_name ? `${user.first_name} ${user.last_name}` : "—"}</p>
-              <p><strong>Phone:</strong> {user.phone_number || "—"}</p>
+              <p><strong>Name:</strong> {user.first_name || user.last_name ? `${user.first_name} ${user.last_name}` : "Not set"}</p>
+              <p><strong>Phone:</strong> {user.phone_number || "Not set"}</p>
               {message && <p className="status-approved">{message}</p>}
               <button className="btn secondary" onClick={startEditing}>
                 <Pencil size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />

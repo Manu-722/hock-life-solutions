@@ -12,19 +12,19 @@ function DashboardHome({ stats }) {
       <div className="stat-grid">
         <div className="stat-card">
           <div className="stat-label">Total products</div>
-          <div className="stat-value">{stats.productCount ?? "—"}</div>
+          <div className="stat-value">{stats.productCount ?? "..."}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Pending orders</div>
-          <div className="stat-value amber">{stats.pendingCount ?? "—"}</div>
+          <div className="stat-value amber">{stats.pendingCount ?? "..."}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Active slides</div>
-          <div className="stat-value">{stats.activeSlides ?? "—"}</div>
+          <div className="stat-value">{stats.activeSlides ?? "..."}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Items on offer</div>
-          <div className="stat-value amber">{stats.offerCount ?? "—"}</div>
+          <div className="stat-value amber">{stats.offerCount ?? "..."}</div>
         </div>
       </div>
       <p style={{ color: "var(--hl-gray)", marginTop: 20 }}>
@@ -53,10 +53,9 @@ export default function AdminDashboard() {
         activeSlides: slides.filter((s) => s.active).length,
       });
     }).catch(() => {
-      // Stats are a nice-to-have on this page - if they fail to load, the
-      // dashboard should still render with "-" placeholders rather than
-      // crash the whole page (the individual Products/Slideshow/Orders
-      // tabs each have their own error handling for the real data).
+      // Stats are a nice-to-have on this page. If they fail to load, the
+      // dashboard still renders with placeholders instead of crashing. The
+      // Products, Slideshow and Orders tabs each handle their own errors.
     });
   }, []);
 

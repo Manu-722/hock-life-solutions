@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { Eye, EyeOff } from "lucide-react";
 import client from "../api/client";
@@ -15,13 +15,22 @@ export default function Login() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { applyTokens } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Where to send the person after signing in (e.g. back to /checkout if
+  // they were redirected here from the cart). Only accept in-app paths.
+  const rawFrom = location.state?.from;
+  const redirectTo = typeof rawFrom === "string" && rawFrom.startsWith("/") ? rawFrom : null;
 
   const afterLogin = (data) => {
     if (data.is_admin) {
       setGreeting(`Welcome, ${data.username} (Admin)`);
-      setTimeout(() => navigate(data.must_change_password ? "/settings" : "/admin"), 900);
+      setTimeout(
+        () => navigate(data.must_change_password ? "/settings" : redirectTo || "/admin"),
+        900
+      );
     } else {
-      navigate("/");
+      navigate(redirectTo || "/");
     }
   };
 
@@ -61,6 +70,11 @@ export default function Login() {
   return (
     <div className="card form-card">
       <h2>Log in</h2>
+      {redirectTo === "/checkout" && (
+        <p style={{ color: "var(--hl-gray)", textAlign: "center", marginTop: 0 }}>
+          Sign in to complete your order. Your cart is saved.
+        </p>
+      )}
       {greeting && <p className="status-approved">{greeting}</p>}
       {error && <p className="status-rejected">{error}</p>}
       <form onSubmit={handleSubmit}>
@@ -118,7 +132,7 @@ export default function Login() {
         <Link to="/forgot-password">Forgot password?</Link>
       </p>
       <p>
-        No account? <Link to="/register">Sign up</Link>
+        No account? <Link to="/register" state={{ from: redirectTo }}>Sign up</Link>
       </p>
     </div>
   );

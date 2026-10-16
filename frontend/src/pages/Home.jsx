@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal, PackageSearch, Flame, UtensilsCrossed, Soup, Refrigerator, LayoutGrid } from "lucide-react";
+import { Search, SlidersHorizontal, PackageSearch, Flame, Soup, Refrigerator, LayoutGrid } from "lucide-react";
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
 import { useSEO } from "../hooks/useSEO";
+import { readCache, writeCache } from "../utils/catalogCache";
 
-// Picks an icon for a category based on its slug. Named distinctly from
-// the page component itself (which is also called "Home") to avoid any
-// naming collision.
+// Picks an icon for a category based on its slug. Anything that doesn't
+// match gets a generic grid icon, so categories added later still work.
 function iconForCategory(slug) {
   if (slug.includes("induction")) return Flame;
   if (slug.includes("cookware") || slug.includes("pan") || slug.includes("sufuria") || slug.includes("kitchen")) return Soup;
@@ -18,25 +18,45 @@ function iconForCategory(slug) {
 export default function Home() {
   useSEO({
     title: "Induction Cookers, Cookware & Household Appliances in Kenya | Hawk Life Solutions",
-    description: "Shop quality induction cookers, cookware, and household appliances in Kenya at honest prices. Hawk Life Solutions - trusted by everyday Kenyan homes.",
+    description: "Shop quality induction cookers, cookware, and household appliances in Kenya at honest prices. Hawk Life Solutions, trusted by everyday Kenyan homes.",
   });
 
-  const [slides, setSlides] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Start from whatever was saved on the last visit, so returning visitors
+  // see the shop immediately instead of a blank "Loading..." screen. Fresh
+  // data replaces it as soon as it arrives.
+  const [slides, setSlides] = useState(() => readCache("slides") || []);
+  const [categories, setCategories] = useState(() => readCache("categories") || []);
+  const [products, setProducts] = useState(() => readCache("products:all") || []);
+  const [loading, setLoading] = useState(() => !readCache("products:all"));
+  const [failed, setFailed] = useState(false);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [onOfferOnly, setOnOfferOnly] = useState(false);
 
   useEffect(() => {
-    client.get("/offers/slideshow/").then((res) => setSlides(res.data));
-    client.get("/products/categories/").then((res) => setCategories(res.data));
+    client
+      .get("/offers/slideshow/")
+      .then((res) => {
+        setSlides(res.data);
+        writeCache("slides", Array.isArray(res.data) ? res.data.filter((s) => s.active) : res.data);
+      })
+      .catch(() => {});
+    client
+      .get("/products/categories/")
+      .then((res) => {
+        setCategories(res.data);
+        writeCache("categories", res.data);
+      })
+      .catch(() => {});
   }, []);
 
-  const runSearch = async (overrides = {}) => {
-    setLoading(true);
+  // "background" means we already have saved products on screen, so we
+  // refresh quietly without flashing a loading message.
+  const runSearch = async (overrides = {}, background = false) => {
+    if (!background) setLoading(true);
+    setFailed(false);
+
     const params = {};
     const cat = overrides.category !== undefined ? overrides.category : category;
     const offerOnly = overrides.onOfferOnly !== undefined ? overrides.onOfferOnly : onOfferOnly;
@@ -45,13 +65,23 @@ export default function Home() {
     if (cat) params.category = cat;
     if (offerOnly) params.is_on_offer = true;
 
-    const { data } = await client.get("/products/", { params });
-    setProducts(data.results || data);
-    setLoading(false);
+    // Only the plain "all items" view is saved for next time.
+    const isDefaultView = Object.keys(params).length === 0;
+
+    try {
+      const { data } = await client.get("/products/", { params });
+      const list = data.results || data;
+      setProducts(list);
+      if (isDefaultView) writeCache("products:all", list);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    runSearch();
+    runSearch({}, Boolean(readCache("products:all")));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -71,13 +101,13 @@ export default function Home() {
     <div>
       <div className="hero">
         <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Effortless Induction Cookers, Flawless Cookware, and Curated Home Essentials.</p>
+        <p>Reliable cells, induction cookers, cookware, and household appliances. Trusted quality, honest prices.</p>
       </div>
 
       {slides.length > 0 ? (
         <Slideshow slides={slides} />
       ) : (
-        <div className="slideshow-empty">No current offers check back soon!</div>
+        <div className="slideshow-empty">No current offers. Check back soon!</div>
       )}
 
       {categories.length > 0 && (
@@ -133,6 +163,11 @@ export default function Home() {
 
       {loading ? (
         <p style={{ color: "var(--hl-gray)" }}>Loading products...</p>
+      ) : failed && products.length === 0 ? (
+        <div className="empty-state">
+          <PackageSearch size={40} />
+          <p>We couldn't load the products just now. Please refresh in a moment.</p>
+        </div>
       ) : products.length === 0 ? (
         <div className="empty-state">
           <PackageSearch size={40} />
@@ -140,7 +175,9 @@ export default function Home() {
         </div>
       ) : (
         <div className="grid">
-          {products.map((p) => <ProductCard key={p.id} product={p} />)}
+          {products.map((p, index) => (
+            <ProductCard key={p.id} product={p} priority={index < 4} />
+          ))}
         </div>
       )}
     </div>

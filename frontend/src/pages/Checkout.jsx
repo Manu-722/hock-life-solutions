@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingBag } from "lucide-react";
 import client from "../api/client";
 import { useCart } from "../context/CartContext";
 
 export default function Checkout() {
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, ready } = useCart();
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [placing, setPlacing] = useState(false);
@@ -54,6 +55,22 @@ export default function Checkout() {
           Once we confirm your payment, your order will show as <strong>Approved</strong> in your Profile order history.
         </p>
         <button className="btn" style={{ width: "100%" }} onClick={() => navigate("/profile")}>Go to my orders</button>
+      </div>
+    );
+  }
+
+  // Wait until the signed-in person's saved cart has finished loading, so
+  // we don't flash "cart is empty" for a split second after login.
+  if (!ready) {
+    return <p style={{ color: "var(--hl-gray)" }}>Loading your cart...</p>;
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="empty-state">
+        <ShoppingBag size={44} />
+        <p>Your cart is empty.</p>
+        <Link to="/" className="btn">Continue shopping</Link>
       </div>
     );
   }
