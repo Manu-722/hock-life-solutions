@@ -1,14 +1,23 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Navigation, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin, Navigation, ExternalLink, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useConsent } from "../hooks/useConsent";
+import { clearConsent } from "../utils/consent";
 import { WhatsAppIcon } from "./icons";
 import {
-  PHONE_NUMBER, PHONE_DISPLAY, EMAIL, RETURN_DAYS, BUSINESS_HOURS, STORE,
+  PHONE_NUMBER, PHONE_DISPLAY, EMAIL, BUSINESS_HOURS, STORE,
   whatsappLink, mapsEmbedUrl, mapsOpenUrl, mapsDirectionsUrl,
 } from "../config/contact";
 
 export default function Footer() {
   const { user } = useAuth();
+  const consent = useConsent();
+  const [mapRequested, setMapRequested] = useState(false);
+
+  // The Google Map can set Google cookies, so it only loads if the visitor
+  // accepted all cookies, or pressed "Load map" for this visit.
+  const showMap = consent === "all" || mapRequested;
 
   return (
     <footer className="hl-footer">
@@ -17,11 +26,11 @@ export default function Footer() {
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">Return policy</h4>
           <p className="hl-footer-text">
-            Faulty, damaged or wrong item? Tell us within {RETURN_DAYS} days of delivery and we'll
-            replace it or refund you via M-Pesa.
+            Item faulty or damaged? Tell us within 24 hours of delivery or pick-up and we'll replace,
+            repair or refund it, depending on the issue.
           </p>
-          <Link to="/return-policy" className="hl-footer-link hl-footer-link-accent">
-            Read the full policy →
+          <Link to="/return-policy" className="hl-footer-link hl-footer-link-accent hl-footer-arrow">
+            Read the full policy <ArrowRight size={15} />
           </Link>
         </div>
 
@@ -64,7 +73,7 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* Where to find us, with live Google Map */}
+        {/* Where to find us */}
         <div className="hl-footer-col">
           <h4 className="hl-footer-heading">Where to find us</h4>
           <div className="hl-footer-text hl-footer-row hl-footer-address">
@@ -77,13 +86,22 @@ export default function Footer() {
           </div>
 
           <div className="hl-map-wrap">
-            <iframe
-              title="Hawk Life Solutions location on Google Maps"
-              src={mapsEmbedUrl()}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
+            {showMap ? (
+              <iframe
+                title="Hawk Life Solutions location on Google Maps"
+                src={mapsEmbedUrl()}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            ) : (
+              <div className="hl-map-placeholder">
+                <p>The map is provided by Google, which may set cookies. Load it only if you're happy with that.</p>
+                <button type="button" className="hl-map-btn primary" onClick={() => setMapRequested(true)}>
+                  Load map
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="hl-map-actions">
@@ -98,7 +116,14 @@ export default function Footer() {
       </div>
 
       <div className="hl-footer-bottom">
-        © {new Date().getFullYear()} Hawk Life Solutions. All rights reserved.
+        <div className="hl-footer-legal">
+          <Link to="/terms">Terms &amp; Conditions</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/cookies">Cookie Policy</Link>
+          <Link to="/return-policy">Return policy</Link>
+          <button type="button" className="hl-footer-linkbtn" onClick={clearConsent}>Cookie settings</button>
+        </div>
+        © {new Date().getFullYear()} Hawk Life Solutions Limited. All rights reserved.
       </div>
     </footer>
   );

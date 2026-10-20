@@ -41,8 +41,12 @@ export default function Login() {
       const { data } = await client.post("/accounts/login/", { username, password });
       await applyTokens(data);
       afterLogin(data);
-    } catch {
-      setError("Invalid username or password.");
+    } catch (err) {
+      if (err?.response?.status === 429) {
+        setError("Too many failed attempts. Please wait 15 minutes, or use Forgot password below.");
+      } else {
+        setError("Invalid username or password.");
+      }
     }
   };
 
@@ -57,7 +61,9 @@ export default function Login() {
       afterLogin(data);
     } catch (err) {
       if (err?.code === "auth/popup-closed-by-user") {
-        // User just closed the popup - not a real error, stay quiet.
+        // User just closed the popup. Not a real error, stay quiet.
+      } else if (err?.response?.status === 429) {
+        setError("Too many attempts. Please wait a minute and try again.");
       } else {
         console.error("Google sign-in error:", err?.code, err?.message, err);
         setError("Google sign-in failed. Please try again.");

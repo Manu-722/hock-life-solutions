@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import CookieBanner from "./components/CookieBanner";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { RequireAdmin, RequireAuth } from "./components/Guards";
 
@@ -17,12 +18,14 @@ import Settings from "./pages/Settings";
 import ProductDetail from "./pages/ProductDetail";
 import About from "./pages/About";
 import ReturnPolicy from "./pages/ReturnPolicy";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Cookies from "./pages/Cookies";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 // Scrolls back to the top whenever the page changes. Without this, clicking
-// a link in the footer (like "About us") would open the new page still
-// scrolled down to the bottom.
+// a link in the footer would open the new page still scrolled to the bottom.
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -45,6 +48,9 @@ export default function App() {
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/return-policy" element={<ReturnPolicy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -63,6 +69,7 @@ export default function App() {
         </ErrorBoundary>
       </main>
       <Footer />
+      <CookieBanner />
     </>
   );
 }

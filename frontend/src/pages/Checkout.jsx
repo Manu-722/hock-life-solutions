@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Check } from "lucide-react";
 import client from "../api/client";
 import { useCart } from "../context/CartContext";
 
@@ -29,7 +29,7 @@ export default function Checkout() {
   if (result) {
     return (
       <div className="card checkout-success">
-        <div className="success-badge">✓</div>
+        <div className="success-badge"><Check size={30} strokeWidth={3} /></div>
         <h2>Order placed!</h2>
         <p style={{ color: "var(--hl-gray)" }}>{result.message}</p>
 

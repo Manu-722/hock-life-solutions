@@ -1,0 +1,282 @@
+.rp {
+  padding: 40px 0 24px;
+}
+
+.rp-sheet {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 56px 64px 48px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  box-shadow: 0 22px 40px -28px rgba(30, 28, 20, 0.35);
+  color: #1d1d22;
+}
+
+.rp-letterhead {
+  text-align: center;
+  padding-bottom: 22px;
+  border-bottom: 4px double #1d1d22;
+}
+
+.rp-company {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.rp-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 28px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.rp-contact div {
+  display: flex;
+  gap: 8px;
+}
+
+.rp-contact dt {
+  padding-top: 2px;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a6f55;
+}
+
+.rp-contact dd {
+  margin: 0;
+}
+
+.rp-sheet a {
+  color: #1d1d22;
+  text-decoration: underline;
+  text-decoration-color: #a8955f;
+  text-underline-offset: 3px;
+}
+
+.rp-sheet a:hover {
+  color: var(--hl-amber-dark);
+}
+
+.rp-title {
+  margin: 36px 0 4px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.3rem, 5vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.rp-sub {
+  margin: 0 0 18px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #7a6f55;
+}
+
+.rp-intro {
+  max-width: 60ch;
+  margin: 0;
+  line-height: 1.75;
+  color: #2e2e34;
+}
+
+.rp-times {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 32px 0 40px;
+  border-top: 1px solid #1d1d22;
+  border-bottom: 1px solid #1d1d22;
+}
+
+.rp-times > div {
+  padding: 18px 20px 18px 0;
+}
+
+.rp-times > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--paper-line);
+}
+
+.rp-big {
+  display: block;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #1d1d22;
+}
+
+.rp-time-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.rp-section {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 0 8px;
+  padding: 22px 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.rp-num {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #a8955f;
+}
+
+.rp-section h2,
+.rp-end h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.rp-section h3 {
+  margin: 16px 0 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a6f55;
+}
+
+.rp-section p,
+.rp-section li,
+.rp-end p {
+  font-size: 0.96rem;
+  line-height: 1.75;
+  color: #2e2e34;
+}
+
+.rp-section p,
+.rp-end p {
+  margin: 0 0 8px;
+}
+
+.rp-section ul {
+  margin: 6px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.rp-section li {
+  position: relative;
+  margin-bottom: 6px;
+  padding-left: 18px;
+}
+
+.rp-section li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.78em;
+  width: 5px;
+  height: 5px;
+  background: #a8955f;
+}
+
+.rp-end {
+  padding-top: 24px;
+  border-top: 4px double #1d1d22;
+}
+
+.rp-end-list {
+  margin: 14px 0 22px;
+}
+
+.rp-end-list div {
+  display: flex;
+  gap: 14px;
+  padding: 7px 0;
+  border-bottom: 1px dotted #cfc8b6;
+  font-size: 0.95rem;
+}
+
+.rp-end-list dt {
+  width: 64px;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a6f55;
+  padding-top: 3px;
+}
+
+.rp-end-list dd {
+  margin: 0;
+}
+
+.rp-print {
+  background: none;
+  border: 1px solid #1d1d22;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1d1d22;
+}
+
+.rp-print:hover {
+  background: #1d1d22;
+  color: var(--hl-white);
+}
+
+@media (max-width: 700px) {
+  .rp {
+    padding-top: 16px;
+  }
+  .rp-sheet {
+    padding: 32px 22px 30px;
+  }
+  .rp-times {
+    grid-template-columns: 1fr;
+  }
+  .rp-times > div,
+  .rp-times > div + div {
+    padding: 14px 0;
+    border-left: 0;
+  }
+  .rp-times > div + div {
+    border-top: 1px solid var(--paper-line);
+  }
+  .rp-section {
+    grid-template-columns: 34px 1fr;
+  }
+  .rp-num {
+    font-size: 1.7rem;
+  }
+}
+
+@media print {
+  .site-header,
+  .hl-footer,
+  .cookie-banner,
+  .rp-print {
+    display: none !important;
+  }
+  .rp {
+    padding: 0;
+  }
+  .rp-sheet {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+}

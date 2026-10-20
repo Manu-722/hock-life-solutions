@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /settings
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
 
-Sitemap: https://hawklife.co.ke/sitemap.xml
+Sitemap: https://www.hawklife.co.ke/sitemap.xml

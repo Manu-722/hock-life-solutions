@@ -1,113 +1,173 @@
-import {
-  Clock, Package, Wallet, CheckCircle2, XCircle, ListChecks, ShieldCheck, MessageCircle, Phone, Mail,
-} from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
-import { WhatsAppIcon } from "../components/icons";
-import { PHONE_NUMBER, PHONE_DISPLAY, EMAIL, RETURN_DAYS, whatsappLink } from "../config/contact";
-
-// DRAFT TERMS - change the number of days in config/contact.js and the
-// wording below to match the policy Hawk Life Solutions actually wants.
+import { PHONE_NUMBER, PHONE_DISPLAY, EMAIL, POSTAL, STORE } from "../config/contact";
 
 export default function ReturnPolicy() {
   useSEO({
     title: "Return Policy | Hawk Life Solutions",
     description:
-      "Hawk Life Solutions return policy: how to return a faulty, damaged or incorrect item, and how refunds and warranty claims work.",
+      "Hawk Life Solutions return policy for appliances, cookware and utensils: 24 hour returns, damaged or defective items, refunds, exchanges and warranty.",
   });
 
   return (
-    <div className="policy-page">
-      <div className="policy-head">
-        <span className="about-eyebrow policy-eyebrow">Customer care</span>
-        <h1>Return Policy</h1>
-        <p>
-          We want you to be completely happy with your purchase from Hawk Life Solutions. If
-          something isn't right, here is how returns, replacements and refunds work.
+    <article className="rp">
+      <div className="rp-sheet">
+        <header className="rp-letterhead">
+          <p className="rp-company">{POSTAL.company}</p>
+          <dl className="rp-contact">
+            <div>
+              <dt>Phone</dt>
+              <dd><a href={`tel:${PHONE_NUMBER}`}>{PHONE_DISPLAY}</a></dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd><a href={`mailto:${EMAIL}`}>{EMAIL}</a></dd>
+            </div>
+            <div>
+              <dt>Post</dt>
+              <dd>{POSTAL.lines.join(", ")}</dd>
+            </div>
+          </dl>
+        </header>
+
+        <h1 className="rp-title">Return Policy</h1>
+        <p className="rp-sub">Appliances, cookware, utensils and more</p>
+        <p className="rp-intro">
+          At Hawk Life Solutions Ltd, we are committed to ensuring your satisfaction with every
+          purchase. If you are not completely satisfied with your kitchen item(s), we're here to help.
         </p>
+
+        <div className="rp-times">
+          <div>
+            <span className="rp-big">24 hrs</span>
+            <span className="rp-time-label">to return an unused item for replacement</span>
+          </div>
+          <div>
+            <span className="rp-big">24 hrs</span>
+            <span className="rp-time-label">to report damage after delivery or pick-up</span>
+          </div>
+          <div>
+            <span className="rp-big">7 to 14</span>
+            <span className="rp-time-label">business days for approved refunds</span>
+          </div>
+        </div>
+
+        <section className="rp-section">
+          <span className="rp-num">1</span>
+          <div>
+            <h2>Eligibility for returns</h2>
+            <p>
+              You may return most new, opened or unopened, and unused kitchen items within 24 hours of
+              purchase for replacement, subject to the conditions below:
+            </p>
+            <ul>
+              <li>Items must be returned in their original packaging with all accessories, manuals, and receipts.</li>
+              <li>Proof of purchase (receipt, order confirmation, or invoice) is required for all returns.</li>
+              <li>Used, damaged, or altered items may not be eligible for replacement unless found to be defective.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">2</span>
+          <div>
+            <h2>Non-returnable items</h2>
+            <p>We do not accept returns on the following:</p>
+            <ul>
+              <li>Opened or used kitchen consumables (for example food-safe oils and cleaners).</li>
+              <li>Items marked "Final sale", "Clearance" or "Non-returnable" on the product page.</li>
+              <li>Custom orders or personalized items.</li>
+              <li>Items without original packaging or missing parts.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">3</span>
+          <div>
+            <h2>Damaged, defective or incorrect items</h2>
+            <p>
+              If your item arrives damaged or defective, please notify us within 24 hours of delivery or
+              pick-up. It is the responsibility of the client to inspect the product upon delivery.
+            </p>
+            <p>
+              We will offer a replacement (if available), a repair (if applicable), another item(s) to
+              cover the cost, or a full refund, depending on the issue.
+            </p>
+            <p>Please include photos of the item and packaging when submitting a damage claim.</p>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">4</span>
+          <div>
+            <h2>Refunds</h2>
+            <ul>
+              <li>Approved refunds will be issued via the original method of payment within 7 to 14 business days.</li>
+              <li>Shipping fees are non-refundable unless the return is due to our error or a defective item.</li>
+              <li>If you paid by cash or mobile money, we may issue a store credit or refund via mobile payment.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">5</span>
+          <div>
+            <h2>Exchanges</h2>
+            <ul>
+              <li>Exchanges are subject to stock availability.</li>
+              <li>Items must meet the same return conditions as listed above.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">6</span>
+          <div>
+            <h2>How to start a return</h2>
+            <p>To start a return, contact us through:</p>
+            <ul>
+              <li>Phone: <a href={`tel:${PHONE_NUMBER}`}>{PHONE_DISPLAY}</a></li>
+              <li>Email: <a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+              <li>In store: visit any of our outlets with your receipt.</li>
+            </ul>
+            <h3>Return shipping for online orders</h3>
+            <ul>
+              <li>Return shipping costs are the responsibility of the customer unless the item is defective or sent in error.</li>
+              <li>We recommend using a trackable shipping service for safety.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-section">
+          <span className="rp-num">7</span>
+          <div>
+            <h2>Warranty policy</h2>
+            <p>We offer a limited warranty on selected kitchen appliances sold through our store.</p>
+            <h3>Warranty coverage</h3>
+            <ul>
+              <li>Covers manufacturing defects in materials or workmanship.</li>
+              <li>Does not cover damage caused by misuse, normal wear and tear, accidents, or unauthorized repairs.</li>
+              <li>Warranty periods vary by product, typically 12 months for induction cookers. Refer to the product page or packaging for specific terms.</li>
+            </ul>
+            <h3>Not included in warranty coverage</h3>
+            <ul>
+              <li>Physical damage caused by misuse, normal wear and tear, accidents, or unauthorized repairs, for example pressure marks on the screen or breakage.</li>
+              <li>Water or any form of liquid spillage.</li>
+              <li>Power surge and related issues.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="rp-end">
+          <h2>Contact us</h2>
+          <p>For questions or assistance with returns, warranties or support, please contact our team.</p>
+          <dl className="rp-end-list">
+            <div><dt>Phone</dt><dd><a href={`tel:${PHONE_NUMBER}`}>{PHONE_DISPLAY}</a></dd></div>
+            <div><dt>Email</dt><dd><a href={`mailto:${EMAIL}`}>{EMAIL}</a></dd></div>
+            <div><dt>Visit</dt><dd>{STORE.lines.join(", ")}, Kenya</dd></div>
+          </dl>
+        </section>
       </div>
-
-      <div className="policy-highlights">
-        <div className="policy-highlight">
-          <Clock size={24} />
-          <h3>{RETURN_DAYS}-day window</h3>
-          <p>Tell us about any problem within {RETURN_DAYS} days of receiving your item.</p>
-        </div>
-        <div className="policy-highlight">
-          <Package size={24} />
-          <h3>Original condition</h3>
-          <p>Keep the item with its accessories, manuals and packaging.</p>
-        </div>
-        <div className="policy-highlight">
-          <Wallet size={24} />
-          <h3>Refund via M-Pesa</h3>
-          <p>Approved refunds go back to the M-Pesa number used to pay.</p>
-        </div>
-      </div>
-
-      <section className="policy-section">
-        <h2><CheckCircle2 size={20} /> What can be returned</h2>
-        <ul>
-          <li>Items that arrive faulty or not working as described.</li>
-          <li>Items damaged in transit.</li>
-          <li>Items that are different from what you ordered.</li>
-          <li>Items that are materially different from their product page description.</li>
-        </ul>
-      </section>
-
-      <section className="policy-section">
-        <h2><XCircle size={20} /> What can't be returned</h2>
-        <ul>
-          <li>Items damaged through misuse, accidents, or not following the user manual.</li>
-          <li>Items that have been altered, repaired or tampered with by someone other than us.</li>
-          <li>Normal wear and tear.</li>
-          <li>Items returned without their original accessories or packaging.</li>
-          <li>Requests made after the {RETURN_DAYS}-day window, except valid warranty claims (see below).</li>
-        </ul>
-      </section>
-
-      <section className="policy-section">
-        <h2><ListChecks size={20} /> How to start a return</h2>
-        <ol>
-          <li>Contact us on WhatsApp, by phone or by email with your order number.</li>
-          <li>Send clear photos or a short video showing the problem.</li>
-          <li>We'll review your request and let you know the next step, including how to send the item back or arrange collection.</li>
-          <li>Once we've received and inspected the item, we'll replace it or refund you.</li>
-        </ol>
-      </section>
-
-      <section className="policy-section">
-        <h2><Wallet size={20} /> Refunds and replacements</h2>
-        <p>
-          If your return is approved, you can choose a replacement (subject to stock) or a refund.
-          Refunds are sent to the M-Pesa number used for the original payment, once the returned
-          item has been received and inspected.
-        </p>
-      </section>
-
-      <section className="policy-section">
-        <h2><ShieldCheck size={20} /> Warranty</h2>
-        <p>
-          Many of our appliances carry a warranty, shown on the product page where it applies. If
-          your item develops a fault during its warranty period, contact us with your order number
-          and we'll guide you through the claim.
-        </p>
-      </section>
-
-      <section className="policy-section">
-        <h2><MessageCircle size={20} /> Contact us about a return</h2>
-        <div className="policy-contact-actions">
-          <a
-            href={whatsappLink("Hello Hawk Life Solutions, I'd like to return or exchange an item. My order number is: ")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="wa-btn"
-          >
-            <WhatsAppIcon size={18} /> <span>WhatsApp</span>
-          </a>
-          <a href={`tel:${PHONE_NUMBER}`} className="policy-contact-link"><Phone size={16} /> {PHONE_DISPLAY}</a>
-          <a href={`mailto:${EMAIL}`} className="policy-contact-link"><Mail size={16} /> {EMAIL}</a>
-        </div>
-      </section>
-    </div>
+    </article>
   );
 }

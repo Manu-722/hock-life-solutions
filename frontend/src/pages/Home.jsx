@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal, PackageSearch, Flame, Soup, Refrigerator, LayoutGrid } from "lucide-react";
+import {
+  Search, SlidersHorizontal, PackageSearch, Flame, Soup, Refrigerator, LayoutGrid, ChevronDown,
+} from "lucide-react";
 import client from "../api/client";
 import Slideshow from "../components/Slideshow";
 import ProductCard from "../components/ProductCard";
 import { useSEO } from "../hooks/useSEO";
+import { useJsonLd } from "../hooks/useJsonLd";
 import { readCache, writeCache } from "../utils/catalogCache";
+import { PHONE_NUMBER, EMAIL, SOCIAL_LINKS, STORE } from "../config/contact";
+import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from "../config/site";
 
 // Picks an icon for a category based on its slug. Anything that doesn't
 // match gets a generic grid icon, so categories added later still work.
@@ -15,11 +20,52 @@ function iconForCategory(slug) {
   return LayoutGrid;
 }
 
+// Business details for Google (shown in search results and on Maps). They
+// come from config/contact.js, so keep that file accurate.
+const businessSchema = {
+  "@context": "https://schema.org",
+  "@type": "Store",
+  name: SITE_NAME,
+  url: SITE_URL,
+  image: DEFAULT_OG_IMAGE,
+  telephone: PHONE_NUMBER,
+  email: EMAIL,
+  description:
+    "Induction cookers, cookware and household appliances in Nairobi, Kenya. Pay with M-Pesa.",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: `${STORE.lines[0]}, Ronald Ngala Street`,
+    addressLocality: "Nairobi",
+    addressCountry: "KE",
+  },
+  sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
+};
+
+const FAQS = [
+  {
+    q: "Why choose an induction cooker?",
+    a: "An induction cooker heats the pot directly instead of heating a flame or the air around it, so less energy is wasted and your kitchen stays cooler. There is also no open flame, which makes it a safer choice for busy homes.",
+  },
+  {
+    q: "Which cookware works on an induction cooker?",
+    a: "Induction cookers need a pot or pan with a magnetic base. Look for the induction compatible label on our cookware pages, or ask us on WhatsApp and we'll help you choose.",
+  },
+  {
+    q: "How do I pay for my order?",
+    a: "Add items to your cart, sign in at checkout and place your order. We then show you our M-Pesa Paybill number and an account number. Once we confirm your payment, your order is approved.",
+  },
+  {
+    q: "Where can I see the products in person?",
+    a: `Visit our shop at ${STORE.lines.join(", ")}. The map and opening hours are at the bottom of every page.`,
+  },
+];
+
 export default function Home() {
   useSEO({
     title: "Induction Cookers, Cookware & Household Appliances in Kenya | Hawk Life Solutions",
     description: "Shop quality induction cookers, cookware, and household appliances in Kenya at honest prices. Hawk Life Solutions, trusted by everyday Kenyan homes.",
   });
+  useJsonLd("local-business", businessSchema);
 
   // Start from whatever was saved on the last visit, so returning visitors
   // see the shop immediately instead of a blank "Loading..." screen. Fresh
@@ -100,8 +146,8 @@ export default function Home() {
   return (
     <div>
       <div className="hero">
-        <h1>Power your home with <span className="accent">Hawk Life Solutions</span></h1>
-        <p>Reliable cells, induction cookers, cookware, and household appliances. Trusted quality, honest prices.</p>
+        <h1>Smart Living. <span className="accent">Living Smart.</span></h1>
+        <p>Effortless Induction Cookers, Flawless Cookware, and Curated Home Essentials.</p>
       </div>
 
       {slides.length > 0 ? (
@@ -180,6 +226,26 @@ export default function Home() {
           ))}
         </div>
       )}
+
+      <section className="seo-section">
+        <h2>Induction cookers, cookware and household appliances in Kenya</h2>
+        <p>
+          Hawk Life Solutions is a Nairobi shop for energy efficient induction cookers, quality
+          cookware, and household appliances such as fridges, microwaves and cutlery. Browse our
+          range online, pay with M-Pesa, and visit us at Royal Palm Mall on Ronald Ngala Street.
+        </p>
+        <div className="faq-list">
+          {FAQS.map((item) => (
+            <details className="faq-item" key={item.q}>
+              <summary>
+                {item.q}
+                <ChevronDown className="faq-chevron" size={18} />
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
