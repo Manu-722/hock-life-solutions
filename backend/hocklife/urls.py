@@ -6,7 +6,7 @@ from django.urls import include, path
 from .sitemap_view import sitemap_view
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
     path("api/accounts/", include("accounts.urls")),
     path("api/products/", include("products.urls")),
     path("api/offers/", include("offers.urls")),

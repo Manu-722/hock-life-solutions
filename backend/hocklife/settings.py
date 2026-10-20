@@ -5,6 +5,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +18,19 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-dev-key-do-not-use-in
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+# Refuse to run a real (non debug) server with the placeholder secret key.
+if not DEBUG and SECRET_KEY.startswith("insecure-"):
+    raise ImproperlyConfigured("Set a real DJANGO_SECRET_KEY before running with DJANGO_DEBUG=False.")
+
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
+
+# Where the Django admin site lives. Set ADMIN_URL on Render to a secret
+# path (for example "manage-hawk-7f3k") to hide it from automated scanners.
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin/").strip("/") + "/"
 
 AUTH_USER_MODEL = "accounts.User"
 
@@ -45,9 +58,8 @@ INSTALLED_APPS = [
     "orders",
 ]
 
-# Cloudinary storage for product/slideshow images - avoids Render's free
-# tier wiping uploaded files on every redeploy/restart. Only switched on
-# when configured, so local development keeps using plain local storage.
+# Cloudinary storage for product/slideshow images. Only switched on when
+# configured, so local development keeps using plain local storage.
 USE_CLOUDINARY_STORAGE = os.environ.get("USE_CLOUDINARY_STORAGE", "False") == "True"
 if USE_CLOUDINARY_STORAGE:
     INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]
@@ -58,6 +70,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "hocklife.middleware.AdminLoginRateLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -87,11 +100,8 @@ WSGI_APPLICATION = "hocklife.wsgi.application"
 # ---------------------------------------------------------------------------
 # DATABASE
 # ---------------------------------------------------------------------------
-# Defaults to SQLite for easy local development.
-# For production, these point at Neon (permanent free Postgres hosting).
-# Neon requires SSL and, for pooled connections, channel binding too - but
-# those options are Postgres-specific and must NOT be passed when using
-# SQLite locally (its driver doesn't understand them and crashes).
+# Defaults to SQLite for easy local development. In production these point
+# at Neon. SSL options are Postgres only, so they are skipped for SQLite.
 _db_engine = os.environ.get("DB_ENGINE", "django.db.backends.sqlite3")
 
 DATABASES = {
@@ -112,11 +122,21 @@ if "postgresql" in _db_engine:
     }
 
 # ---------------------------------------------------------------------------
+# CACHE (used to count login attempts and request rates)
+# ---------------------------------------------------------------------------
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "hocklife-security",
+    }
+}
+
+# ---------------------------------------------------------------------------
 # PASSWORD VALIDATION
 # ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 8}},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 10}},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
@@ -135,10 +155,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# IMPORTANT: when STORAGES is defined, it must always include a "default"
-# entry (where uploaded images go). It was missing before, which crashed
-# every image field with "Could not find config for 'default'" whenever
-# Cloudinary wasn't switched on (i.e. when running locally).
+# When STORAGES is defined it must always include a "default" entry (where
+# uploaded images go).
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -149,8 +167,6 @@ STORAGES = {
 }
 
 if USE_CLOUDINARY_STORAGE:
-    # Product/slideshow images go to Cloudinary instead of local disk -
-    # this is what makes uploaded images survive redeploys on Render.
     STORAGES["default"] = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     }
@@ -166,8 +182,14 @@ FRONTEND_PUBLIC_URL = os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:51
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------------------------
-# REST FRAMEWORK / JWT
+# REST FRAMEWORK / JWT / RATE LIMITS
 # ---------------------------------------------------------------------------
+# Only JSON is served in production. The browsable API page is a debugging
+# aid and only appears when DEBUG is on.
+_renderers = ["rest_framework.renderers.JSONRenderer"]
+if DEBUG:
+    _renderers.append("rest_framework.renderers.BrowsableAPIRenderer")
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -180,10 +202,28 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ),
+    "DEFAULT_RENDERER_CLASSES": _renderers,
+    "DEFAULT_THROTTLE_CLASSES": (
+        "hocklife.throttles.AnonThrottle",
+        "hocklife.throttles.UserThrottle",
+        "hocklife.throttles.ScopedThrottle",
+    ),
+    # Per visitor address. Kept fairly generous because many customers on
+    # one mobile network can share a single public address.
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "300/min",
+        "user": "1200/hour",
+        "login": "15/min",
+        "register": "20/hour",
+        "forgot": "10/hour",
+        "reset": "15/hour",
+        "firebase": "30/min",
+        "password": "10/hour",
+    },
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=6),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -192,10 +232,27 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------
 # CORS
 # ---------------------------------------------------------------------------
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-).split(",")
+CORS_ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if o.strip()
+]
 CORS_ALLOW_CREDENTIALS = True
+
+# ---------------------------------------------------------------------------
+# PRODUCTION SECURITY HEADERS AND COOKIES
+# ---------------------------------------------------------------------------
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "same-origin"
+    X_FRAME_OPTIONS = "DENY"
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{h}" for h in ALLOWED_HOSTS if h not in ("localhost", "127.0.0.1")
+    ]
 
 # ---------------------------------------------------------------------------
 # EMAIL
@@ -208,8 +265,8 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-# Without an explicit timeout, a stuck SMTP connection can hang the request
-# forever and get the whole worker killed. Fail fast instead.
+# Without a timeout, a stuck mail connection can hang the request and get
+# the whole worker killed. Fail fast instead.
 EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Hawk Life Solutions <no-reply@hawklife.com>")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
@@ -222,7 +279,7 @@ PASSWORD_RESET_CODE_LIFETIME_MINUTES = 5
 FIREBASE_SERVICE_ACCOUNT_PATH = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "")
 
 # ---------------------------------------------------------------------------
-# HAWK LIFE SOLUTIONS - BUSINESS SETTINGS
+# HAWK LIFE SOLUTIONS BUSINESS SETTINGS
 # ---------------------------------------------------------------------------
 COMPANY_NAME = "Hawk Life Solutions"
 COMPANY_PAYBILL_NUMBER = os.environ.get("COMPANY_PAYBILL_NUMBER", "522522")
