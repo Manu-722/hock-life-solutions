@@ -1018,3 +1018,24 @@ tbody tr:hover { background: var(--hl-off-white); }
   .navbar .brand { font-size: 1rem; }
   .topbar-link { font-size: 0.76rem; }
 }
+
+
+
+
+
+
+
+
+
+
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logo {
+  height: 32px;   /* small, clean, fits your theme */
+  width: auto;
+}
