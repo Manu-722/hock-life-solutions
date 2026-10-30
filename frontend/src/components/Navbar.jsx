@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ShoppingCart, User, Settings, LayoutDashboard, LogOut, Zap, Menu, X, Phone, Info, RotateCcw,
+  ShoppingCart, User, Settings, LayoutDashboard, LogOut, Menu, X, Phone, Info, RotateCcw,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -31,8 +31,7 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
-      {/* Top row: tap-to-call phone and WhatsApp (icon + label) on the left,
-          social links in the top-right corner (visible on every screen size). */}
+      {/* Top row */}
       <div className="topbar">
         <div className="topbar-inner">
           <div className="topbar-contact">
@@ -56,10 +55,19 @@ export default function Navbar() {
 
       {/* Main navigation row */}
       <div className="navbar">
-        <Link to="/" className="brand" onClick={closeMenu}>
-          <Zap size={20} style={{ verticalAlign: "-4px", marginRight: 6 }} />
-          Hawk Life Solutions
-        </Link>
+
+        {/* ⭐ Logo + Name aligned together */}
+        <div className="brand-wrap">
+          <img
+            src="src/assets/Hawk new.jpeg"
+            alt="Hawk Life Solutions"
+            className="navbar-logo"
+          />
+
+          <Link to="/" className="brand" onClick={closeMenu}>
+            Hawk Life Solutions
+          </Link>
+        </div>
 
         <nav className="nav-desktop">
           <Link to="/cart" style={{ display: "flex", alignItems: "center", gap: 6 }}>
