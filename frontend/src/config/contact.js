@@ -18,10 +18,10 @@ export const EMAIL = "lifesolutions.hawk@gmail.com";
 // Replace these with your real page links. Leave a value as "" to hide
 // that icon everywhere.
 export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/hawklifesolutions",
-  facebook: "https://facebook.com/hawklifesolutions",
-  youtube: "https://youtube.com/@hawklifesolutions",
-  tiktok: "https://tiktok.com/@hawklifesolutions",
+  instagram: "https://www.instagram.com/hawkinduction.254?igsi=MWRpejU0c2ZoaXN0OA==",
+  facebook: "https://www.facebook.com/share/1F44hup4Rz/",
+  youtube: "https://www.youtube.com/@Hawkinduction.254",
+  tiktok: "https://www.tiktok.com/@hawkinduction.254?_r=1&_t=ZS-99Gb6aX1KgG",
 };
 
 // Opens a WhatsApp chat with a pre-filled message.
